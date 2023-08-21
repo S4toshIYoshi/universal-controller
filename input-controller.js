@@ -12,6 +12,7 @@ export class InputController {
         this.enabled = false
 
         this.pressButton = {}
+
     }
 
     bindActions(actionsToBind) {
@@ -56,6 +57,7 @@ export class InputController {
     keyBoardEvent(e, press) {
         for(let key in this.actionsToBind) {
             if(this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1) {
+                //console.log(e.keyCode)
                 this.actionsToBind[`${key}`].active = press
             }
         } 
@@ -68,6 +70,7 @@ export class InputController {
 
     downKey(e) {
         this.keyBoardEvent(e, true)
+        console.log(this.pressButton)
         this.pressButton[e.keyCode] = e.keyCode
     }
 
