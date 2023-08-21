@@ -3,19 +3,19 @@ import {InputController} from './input-controller.js'
 const ButtonKey = {
     "left": {
         keys: [65,37],
-        enabled: false
+        enabled: true
     },
     "right": {
         keys: [68,39],
-        enabled: false
+        enabled: true
     },
     "top": {
         keys: [87,38],
-        enabled: false
+        enabled: true
     },
     "bottom": {
         keys: [83,40],
-        enabled: false
+        enabled: true
     }
 
 }
@@ -23,7 +23,7 @@ const ButtonKey = {
 const jumpKey = {
     "jump": {
         keys: [32],
-        enabled: false
+        enabled: true
     }
 }
 
@@ -35,9 +35,6 @@ inputController.bindActions(jumpKey)
 
 let x = 50
 let y = 50
-
-
-
 
 const attach = document.querySelector('.actived')
 attach.onclick = () => {
@@ -65,8 +62,14 @@ const jump = () => {
         y += 1
         target.style.top = `${y}%`;
         target.style.backgroundColor = 'black'
+        inputController.disableAction('jump')
     }, 100)
 
+    setTimeout(() => {
+        inputController.enableAction('jump')
+    }, 500)
+
+    
     y -= 1;
     target.style.top = `${y}%`;
     target.style.backgroundColor = 'blue'

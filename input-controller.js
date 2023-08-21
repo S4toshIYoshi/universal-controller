@@ -21,6 +21,7 @@ export class InputController {
     enableAction(actionName) {
         if(this.enabled) {
             this.actionsToBind[actionName].enabled = true
+            console.log(this.actionsToBind)
         }
             
     }
@@ -42,7 +43,7 @@ export class InputController {
     }
 
     isActionActive(actionName) {
-        if(this.enabled && this.actionsToBind[actionName].enabled) {
+        if(this.enabled && this.actionsToBind[actionName].enabled && this.actionsToBind[actionName].active) {
             return true
         }
         return false
@@ -52,22 +53,21 @@ export class InputController {
         return this.pressButton.hasOwnProperty(keyCode);
     }
 
-
-    keyBoardEvent(e, action) {
+    keyBoardEvent(e, press) {
         for(let key in this.actionsToBind) {
             if(this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1) {
-                action(key)
+                this.actionsToBind[`${key}`].active = press
             }
         } 
     }
 
     upKey(e) {
-        this.keyBoardEvent(e, (key) => this.disableAction(key))
+        this.keyBoardEvent(e, false)
         delete this.pressButton[e.keyCode]
     }
 
     downKey(e) {
-        this.keyBoardEvent(e, (key) => this.enableAction(key))
+        this.keyBoardEvent(e, true)
         this.pressButton[e.keyCode] = e.keyCode
     }
 
