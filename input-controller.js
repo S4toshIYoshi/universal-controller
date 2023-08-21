@@ -9,7 +9,9 @@ export class InputController {
         this.actionsToBind = actionsToBind
 
         this.target = target
-        this.isDisable = false
+        this.enabled = false
+
+        this.pressButton = {}
     }
 
     bindActions(actionsToBind) {
@@ -17,35 +19,63 @@ export class InputController {
     }
 
     enableAction(actionName) {
-        if(this.isDisable) {
+        if(this.enabled) {
             this.actionsToBind[actionName].enabled = true
         }
             
     }
 
     disableAction(actionName) {
-        if(this.isDisable) {
+        if(this.enabled) {
             this.actionsToBind[actionName].enabled = false
         }
             
     }
 
     attach(target, dontEnable) {
-        this.target = !!dontEnable ? null : target
-        this.isDisable = true
+       this.target = target
+       this.enabled = !!dontEnable ? false : true
     }
 
     detach() {
         this.target = null
-        this.isDisable = false
+        this.enabled = false
     }
 
     isActionActive(actionName) {
-        return this.actionsToBind[actionName].enabled
+        if(this.enabled && this.actionsToBind[actionName].enabled) {
+            return true
+        }
+        return false
     }
 
     isKeyPressed(keyCode) {
+        return this.pressButton.hasOwnProperty(keyCode);
+    }
+
+
+    keyBoardEvent(e, action) {
+        for(let key in this.actionsToBind) {
+            if(this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1 ) {
+                action(key)
+            }
+        } 
+    }
+
+    upKey(e) {
+        this.keyBoardEvent(e, (key) => this.disableAction(key))
+        delete this.pressButton[e.keyCode]
+        this.press = true
+
+    }
+
+    downKey(e) {
+        this.keyBoardEvent(e, (key) => this.enableAction(key))
+        if(!this.isKeyPressed(e.keyCode)) {
+            this.pressButton[e.keyCode] = e.keyCode
+        }
         
+        this.press = false
     }
 
 }

@@ -2,54 +2,41 @@ import {InputController} from './input-controller.js'
 
 const ButtonKey = {
     "left": {
-        keys: 65,
+        keys: [65,37],
         enabled: false
     },
     "right": {
-        keys: 68,
+        keys: [68,39],
         enabled: false
     },
     "top": {
-        keys: 87,
+        keys: [87,38],
         enabled: false
     },
     "bottom": {
-        keys: 83,
+        keys: [83,40],
         enabled: false
     }
 
+}
+
+const jumpKey = {
+    "jump": {
+        keys: [32],
+        enabled: false
+    }
 }
 
 
 const target = document.querySelector('.cube')
 
 const inputController = new InputController(ButtonKey, target)
-inputController.bindActions(ButtonKey)
+inputController.bindActions(jumpKey)
 
 let x = 50
 let y = 50
 
-const move = () => {
-    if (inputController.isActionActive('right')) {
-        x += 0.2;
-        target.style.left = `${x}%`;
-    }
-    if (inputController.isActionActive('left')) {
-        x -= 0.2;
-        target.style.left = `${x}%`;
-    }
-    if (inputController.isActionActive('top')) {
-        y -= 0.2;
-        target.style.top = `${y}%`;
-    }
-    if (inputController.isActionActive('bottom')) {
-        y += 0.2;
-        target.style.top = `${y}%`;
-    }
-    window.requestAnimationFrame(move)
-}
 
-window.requestAnimationFrame(move);
 
 
 const attach = document.querySelector('.actived')
@@ -66,25 +53,53 @@ detach.onclick = () => {
 
 
 document.addEventListener('keydown', (e) => {
-    for(let key in inputController.actionsToBind) {
-        if(inputController.actionsToBind[`${key}`].keys == e.keyCode) {
-            inputController.enableAction(key)
-            console.log(inputController.actionsToBind[`${key}`].enabled )
-        }
-    }
+    inputController.downKey(e)
 });
 
 document.addEventListener('keyup', (e) => {
-    for(let key in inputController.actionsToBind) {
-        if(inputController.actionsToBind[`${key}`].keys == e.keyCode) {
-            inputController.disableAction(key)
-            console.log(inputController.actionsToBind[`${key}`].enabled)
-        }
-    }
+    inputController.upKey(e)
 });
 
     
 
-   
-    //console.log(e.keyCode)
+   const move = () => {
+    if (inputController.isActionActive('right')) {
+        x += 0.2;
+        target.style.left = `${x}%`;
+    }
+    if (inputController.isActionActive('left')) {
+        x -= 0.2;
+        target.style.left = `${x}%`;
+    }
+    if (inputController.isActionActive('top')) {
+        y -= 0.2;
+        target.style.top = `${y}%`;
+    }
+    if (inputController.isActionActive('bottom')) {
+        y += 0.2;
+        target.style.top = `${y}%`;
+    }
+
+    if (inputController.isActionActive('jump')) {
+
+        setTimeout(() => {
+            y += 1
+            target.style.top = `${y}%`;
+            target.style.backgroundColor = 'black'
+        }, 200)
+
+        /*if(inputController.isKeyPressed(32)) {
+            inputController.disableAction('jump')
+        }*/
+        
+        
+        y -= 1;
+        target.style.top = `${y}%`;
+        target.style.backgroundColor = 'blue'
+        
+    }
+    window.requestAnimationFrame(move)
+}
+
+window.requestAnimationFrame(move);
 
