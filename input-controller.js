@@ -28,8 +28,7 @@ export class InputController {
     disableAction(actionName) {
         if(this.enabled) {
             this.actionsToBind[actionName].enabled = false
-        }
-            
+        }       
     }
 
     attach(target, dontEnable) {
@@ -56,7 +55,7 @@ export class InputController {
 
     keyBoardEvent(e, action) {
         for(let key in this.actionsToBind) {
-            if(this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1 ) {
+            if(this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1) {
                 action(key)
             }
         } 
@@ -65,17 +64,11 @@ export class InputController {
     upKey(e) {
         this.keyBoardEvent(e, (key) => this.disableAction(key))
         delete this.pressButton[e.keyCode]
-        this.press = true
-
     }
 
     downKey(e) {
         this.keyBoardEvent(e, (key) => this.enableAction(key))
-        if(!this.isKeyPressed(e.keyCode)) {
-            this.pressButton[e.keyCode] = e.keyCode
-        }
-        
-        this.press = false
+        this.pressButton[e.keyCode] = e.keyCode
     }
 
 }

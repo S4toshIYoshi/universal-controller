@@ -60,9 +60,19 @@ document.addEventListener('keyup', (e) => {
     inputController.upKey(e)
 });
 
-    
+const jump = () => {
+    setTimeout(() => {
+        y += 1
+        target.style.top = `${y}%`;
+        target.style.backgroundColor = 'black'
+    }, 100)
 
-   const move = () => {
+    y -= 1;
+    target.style.top = `${y}%`;
+    target.style.backgroundColor = 'blue'
+}
+
+const move = () => {
     if (inputController.isActionActive('right')) {
         x += 0.2;
         target.style.left = `${x}%`;
@@ -81,22 +91,7 @@ document.addEventListener('keyup', (e) => {
     }
 
     if (inputController.isActionActive('jump')) {
-
-        setTimeout(() => {
-            y += 1
-            target.style.top = `${y}%`;
-            target.style.backgroundColor = 'black'
-        }, 200)
-
-        /*if(inputController.isKeyPressed(32)) {
-            inputController.disableAction('jump')
-        }*/
-        
-        
-        y -= 1;
-        target.style.top = `${y}%`;
-        target.style.backgroundColor = 'blue'
-        
+        jump()
     }
     window.requestAnimationFrame(move)
 }
