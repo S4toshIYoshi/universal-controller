@@ -49,14 +49,6 @@ detach.onclick = () => {
 }
 
 
-document.addEventListener('keydown', (e) => {
-    inputController.downKey(e)
-});
-
-document.addEventListener('keyup', (e) => {
-    inputController.upKey(e)
-});
-
 const jump = () => {
     setTimeout(() => {
         y += 1
