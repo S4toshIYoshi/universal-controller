@@ -29,7 +29,6 @@ const jumpKey = {
 const target = document.querySelector('.cube')
 
 const inputController = new InputController(ButtonKey, target)
-inputController.bindActions(jumpKey)
 
 const setting = {
   x: 50,
@@ -54,6 +53,21 @@ const detach = document.querySelector('.deactived')
 detach.onclick = () => {
   inputController.detach()
   console.log('deactive')
+}
+
+const activeController = document.querySelector('.activeController')
+activeController.onclick = () => {
+  inputController.enabled = true
+}
+
+const deactiveController = document.querySelector('.deactiveController')
+deactiveController.onclick = () => {
+  inputController.enabled = false
+}
+
+const bind = document.querySelector('.bind')
+bind.onclick = () => {
+  inputController.bindActions(jumpKey)
 }
 
 const jump = () => {
@@ -91,10 +105,12 @@ const move = () => {
     setting.y += setting.speed
     target.style.top = `${setting.y}%`
   }
-
-  if (inputController.isActionActive('jump')) {
-    jump()
+  if (inputController.actionsToBind['jump']) {
+    if (inputController.isActionActive('jump')) {
+      jump()
+    }
   }
+
   window.requestAnimationFrame(move)
 }
 

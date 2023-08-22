@@ -35,10 +35,6 @@ class KeyBoard {
       document.removeEventListener('keyup', e => this.upKey(e))
     }
   }
-
-  isKeyPressed(keyCode) {
-    return this.pressButton.hasOwnProperty(keyCode)
-  }
 }
 
 export class InputController extends KeyBoard {
@@ -46,6 +42,8 @@ export class InputController extends KeyBoard {
   focused
   ACTION_ACTIVATED = 'input-controller:action-activated'
   ACTION_DEACTIVATED = 'input-controller:action-deactivated'
+
+  target
 
   constructor(actionsToBind, target) {
     super(actionsToBind)
@@ -64,14 +62,13 @@ export class InputController extends KeyBoard {
   }
 
   enableAction(actionName) {
-    if (this.enabled) {
+    if (this.enabled && this.target) {
       this.actionsToBind[actionName].enabled = true
-      console.log(this.actionsToBind)
     }
   }
 
   disableAction(actionName) {
-    if (this.enabled) {
+    if (this.enabled && this.target) {
       this.actionsToBind[actionName].enabled = false
     }
   }
@@ -95,5 +92,9 @@ export class InputController extends KeyBoard {
       (this.actionsToBind[actionName].active ||
         this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el)))
     )
+  }
+
+  isKeyPressed(keyCode) {
+    return this.pressButton.hasOwnProperty(keyCode)
   }
 }
