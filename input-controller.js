@@ -1,37 +1,32 @@
 class KeyBoard {
   constructor() {
     this.pressButton = {}
+
+    this.handlerUpKey = this.upKey.bind(this)
+    this.handlerDownKey = this.downKey.bind(this)
   }
 
-  upKey(key) {
-    delete this.pressButton[key]
+  upKey(e) {
+    delete this.pressButton[e.keyCode]
+    this.actionDeactivated.detail.activity = this
+    document.dispatchEvent(this.actionDeactivated)
   }
 
-  downKey(key) {
-    if (!this.isKeyPressed(key)) {
-      this.pressButton[key] = key
+  downKey(e) {
+    if (!this.isKeyPressed(e.keyCode)) {
+      this.pressButton[e.keyCode] = e.keyCode
+
+      document.dispatchEvent(this.actionActivated)
     }
   }
 
   KeyboardListener(show) {
     if (show) {
-      document.addEventListener('keydown', e => {
-        this.actionActivated.detail.key = e.keyCode
-        document.dispatchEvent(this.actionActivated)
-      })
-      document.addEventListener('keyup', e => {
-        this.actionDeactivated.detail.key = e.keyCode
-        document.dispatchEvent(this.actionDeactivated)
-      })
+      document.addEventListener('keydown', this.handlerDownKey)
+      document.addEventListener('keyup', this.handlerUpKey)
     } else {
-      document.removeEventListener('keydown', e => {
-        this.actionActivated.detail.key = e.keyCode
-        document.dispatchEvent(this.actionActivated)
-      })
-      document.removeEventListener('keyup', e => {
-        this.actionDeactivated.detail.key = e.keyCode
-        document.dispatchEvent(this.actionDeactivated)
-      })
+      document.removeEventListener('keydown', this.handlerDownKey)
+      document.removeEventListener('keyup', this.handlerUpKey)
     }
   }
 }
@@ -53,10 +48,14 @@ export class InputController extends KeyBoard {
     this.enabled = false
 
     this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
-      detail: {key: null},
+      detail: {
+        activity: null,
+      },
     })
     this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
-      detail: {key: null},
+      detail: {
+        activity: null,
+      },
     })
   }
 
@@ -80,25 +79,15 @@ export class InputController extends KeyBoard {
     this.target = target
     this.enabled = !!dontEnable ? false : true
 
-    document.addEventListener(this.ACTION_ACTIVATED, e =>
-      this.downKey(e.detail.key)
-    )
-    document.addEventListener(this.ACTION_DEACTIVATED, e =>
-      this.upKey(e.detail.key)
-    )
     this.KeyboardListener(true)
+
+    document.addEventListener(this.ACTION_ACTIVATED, e => console.log())
   }
 
   detach() {
     this.target = null
     this.enabled = false
 
-    document.removeEventListener(this.ACTION_ACTIVATED, e =>
-      this.downKey(e.detail.key)
-    )
-    document.removeEventListener(this.ACTION_DEACTIVATED, e =>
-      this.upKey(e.detail.key)
-    )
     this.KeyboardListener(false)
   }
 
