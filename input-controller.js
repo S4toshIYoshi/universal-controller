@@ -3,36 +3,35 @@ class KeyBoard {
     this.pressButton = {}
   }
 
-  event(e, press) {
-    for (let key in this.actionsToBind) {
-      if (this.actionsToBind[`${key}`].keys.indexOf(e.keyCode) != -1) {
-        this.actionsToBind[`${key}`].active = press
-        document.dispatchEvent(
-          press ? this.actionActivated : this.actionDeactivated
-        )
-      }
+  upKey(key) {
+    delete this.pressButton[key]
+  }
+
+  downKey(key) {
+    if (!this.isKeyPressed(key)) {
+      this.pressButton[key] = key
     }
   }
 
-  upKey(e) {
-    delete this.pressButton[e.keyCode]
-    this.event(e, false)
-  }
-
-  downKey(e) {
-    if (!this.isKeyPressed(e.keyCode)) {
-      this.pressButton[e.keyCode] = e.keyCode
-    }
-    this.event(e, true)
-  }
-
-  toggleListener(show) {
+  KeyboardListener(show) {
     if (show) {
-      document.addEventListener('keydown', e => this.downKey(e))
-      document.addEventListener('keyup', e => this.upKey(e))
+      document.addEventListener('keydown', e => {
+        this.actionActivated.detail.key = e.keyCode
+        document.dispatchEvent(this.actionActivated)
+      })
+      document.addEventListener('keyup', e => {
+        this.actionDeactivated.detail.key = e.keyCode
+        document.dispatchEvent(this.actionDeactivated)
+      })
     } else {
-      document.removeEventListener('keydown', e => this.downKey(e))
-      document.removeEventListener('keyup', e => this.upKey(e))
+      document.removeEventListener('keydown', e => {
+        this.actionActivated.detail.key = e.keyCode
+        document.dispatchEvent(this.actionActivated)
+      })
+      document.removeEventListener('keyup', e => {
+        this.actionDeactivated.detail.key = e.keyCode
+        document.dispatchEvent(this.actionDeactivated)
+      })
     }
   }
 }
@@ -45,7 +44,7 @@ export class InputController extends KeyBoard {
 
   target
 
-  constructor(actionsToBind, target) {
+  constructor(actionsToBind, target = null) {
     super(actionsToBind)
 
     this.actionsToBind = actionsToBind
@@ -53,8 +52,12 @@ export class InputController extends KeyBoard {
     this.target = target
     this.enabled = false
 
-    this.actionActivated = new Event(this.ACTION_ACTIVATED)
-    this.actionDeactivated = new Event(this.ACTION_DEACTIVATED)
+    this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
+      detail: {key: null},
+    })
+    this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
+      detail: {key: null},
+    })
   }
 
   bindActions(actionsToBind) {
@@ -76,21 +79,35 @@ export class InputController extends KeyBoard {
   attach(target, dontEnable) {
     this.target = target
     this.enabled = !!dontEnable ? false : true
-    this.toggleListener(true)
+
+    document.addEventListener(this.ACTION_ACTIVATED, e =>
+      this.downKey(e.detail.key)
+    )
+    document.addEventListener(this.ACTION_DEACTIVATED, e =>
+      this.upKey(e.detail.key)
+    )
+    this.KeyboardListener(true)
   }
 
   detach() {
     this.target = null
     this.enabled = false
-    this.toggleListener(false)
+
+    document.removeEventListener(this.ACTION_ACTIVATED, e =>
+      this.downKey(e.detail.key)
+    )
+    document.removeEventListener(this.ACTION_DEACTIVATED, e =>
+      this.upKey(e.detail.key)
+    )
+    this.KeyboardListener(false)
   }
 
   isActionActive(actionName) {
     return (
       this.enabled &&
+      this.target &&
       this.actionsToBind[actionName].enabled &&
-      (this.actionsToBind[actionName].active ||
-        this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el)))
+      this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el))
     )
   }
 

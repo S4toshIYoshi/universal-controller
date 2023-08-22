@@ -1,15 +1,17 @@
 .cube {
-    width: 100px;
-    height: 100px;
+  width: 100px;
+  height: 100px;
 
-    background-color: black;
+  background-color: black;
+
+  border-radius: 50px;
 }
 
 .button {
-    padding: 20px;
-    background-color: white;
+  padding: 20px;
+  background-color: white;
 
-    border: 1px solid black;
+  border: 1px solid black;
 
-    cursor: pointer;
+  cursor: pointer;
 }

@@ -28,7 +28,7 @@ const jumpKey = {
 
 const target = document.querySelector('.cube')
 
-const inputController = new InputController(ButtonKey, target)
+const inputController = new InputController(ButtonKey)
 
 const setting = {
   x: 50,
