@@ -1,106 +1,165 @@
 class KeyBoard {
-  constructor() {
-    this.pressButton = {}
+	constructor(actionsToBind) {
+		this.actionsToBind = actionsToBind;
 
-    this.handlerUpKey = this.upKey.bind(this)
-    this.handlerDownKey = this.downKey.bind(this)
-  }
+		this.pressButton = {};
 
-  upKey(e) {
-    delete this.pressButton[e.keyCode]
-    this.actionDeactivated.detail.activity = this
-    document.dispatchEvent(this.actionDeactivated)
-  }
+		this.handlerUpKey = this.upKey.bind(this);
+		this.handlerDownKey = this.downKey.bind(this);
 
-  downKey(e) {
-    if (!this.isKeyPressed(e.keyCode)) {
-      this.pressButton[e.keyCode] = e.keyCode
+		this.allBindKey = new Map();
+		this.filingMap(this.actionsToBind);
 
-      document.dispatchEvent(this.actionActivated)
-    }
-  }
+		this.succsesKey = false;
+		this.oldSuccsesKey = null;
+	}
 
-  KeyboardListener(show) {
-    if (show) {
-      document.addEventListener('keydown', this.handlerDownKey)
-      document.addEventListener('keyup', this.handlerUpKey)
-    } else {
-      document.removeEventListener('keydown', this.handlerDownKey)
-      document.removeEventListener('keyup', this.handlerUpKey)
-    }
-  }
+	filingMap(bind) {
+		if (bind) {
+			for (let key in bind) {
+				this.actionsToBind[key].keys.forEach(el => this.allBindKey.set(el, el));
+			}
+		}
+	}
+
+	updateMap(newBind) {
+		this.allBindKey.clear();
+		this.filingMap(newBind);
+	}
+
+	searchKey(keyCode) {
+		this.oldSuccsesKey = this.searchKey;
+
+		if (this.allBindKey.has(keyCode)) {
+			this.succsesKey = true;
+		} else {
+			this.succsesKey = false;
+		}
+	}
+
+	upKey(e) {
+		delete this.pressButton[e.keyCode];
+		if (this.succsesKey) {
+			document.dispatchEvent(this.actionDeactivated);
+		}
+	}
+
+	downKey(e) {
+		if (!this.isKeyPressed(e.keyCode)) {
+			this.pressButton[e.keyCode] = e.keyCode;
+		}
+		this.searchKey(e.keyCode);
+		if (this.succsesKey) {
+			document.dispatchEvent(this.actionActivated);
+		}
+	}
+
+	KeyboardListener(show) {
+		if (show) {
+			document.addEventListener('keydown', this.handlerDownKey);
+			document.addEventListener('keyup', this.handlerUpKey);
+		} else {
+			document.removeEventListener('keydown', this.handlerDownKey);
+			document.removeEventListener('keyup', this.handlerUpKey);
+		}
+	}
+
+	isKeyPressed(keyCode) {
+		return this.pressButton.hasOwnProperty(keyCode);
+	}
 }
 
 export class InputController extends KeyBoard {
-  enabled
-  focused
-  ACTION_ACTIVATED = 'input-controller:action-activated'
-  ACTION_DEACTIVATED = 'input-controller:action-deactivated'
+	enabled;
+	focused;
+	ACTION_ACTIVATED = 'input-controller:action-activated';
+	ACTION_DEACTIVATED = 'input-controller:action-deactivated';
 
-  target
+	target;
+	activity;
+	nowAction;
 
-  constructor(actionsToBind, target = null) {
-    super(actionsToBind)
+	constructor(actionsToBind, target = null) {
+		super(actionsToBind);
 
-    this.actionsToBind = actionsToBind
+		this.actionsToBind = actionsToBind;
 
-    this.target = target
-    this.enabled = false
+		this.target = target;
+		this.enabled = false;
 
-    this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
-      detail: {
-        activity: null,
-      },
-    })
-    this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
-      detail: {
-        activity: null,
-      },
-    })
-  }
+		this.actionActivated = new Event(this.ACTION_ACTIVATED);
+		this.actionDeactivated = new Event(this.ACTION_DEACTIVATED);
 
-  bindActions(actionsToBind) {
-    this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind)
-  }
+		this.activity = null;
 
-  enableAction(actionName) {
-    if (this.enabled && this.target) {
-      this.actionsToBind[actionName].enabled = true
-    }
-  }
+		this.handlerActivity = (e => (this.activity = true)).bind(this);
 
-  disableAction(actionName) {
-    if (this.enabled && this.target) {
-      this.actionsToBind[actionName].enabled = false
-    }
-  }
+		this.handlerDeactivity = (() => (this.activity = false)).bind(this);
 
-  attach(target, dontEnable) {
-    this.target = target
-    this.enabled = !!dontEnable ? false : true
+		this.newAction = null;
+	}
 
-    this.KeyboardListener(true)
+	bindActions(actionsToBind) {
+		this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind);
+		this.updateMap(this.actionsToBind);
+	}
 
-    document.addEventListener(this.ACTION_ACTIVATED, e => console.log())
-  }
+	enableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = true;
+		}
+	}
 
-  detach() {
-    this.target = null
-    this.enabled = false
+	disableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = false;
+		}
+	}
 
-    this.KeyboardListener(false)
-  }
+	attach(target, dontEnable) {
+		this.target = target;
+		this.enabled = !!dontEnable ? false : true;
 
-  isActionActive(actionName) {
-    return (
-      this.enabled &&
-      this.target &&
-      this.actionsToBind[actionName].enabled &&
-      this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el))
-    )
-  }
+		this.KeyboardListener(true);
 
-  isKeyPressed(keyCode) {
-    return this.pressButton.hasOwnProperty(keyCode)
-  }
+		document.addEventListener(this.ACTION_ACTIVATED, this.handlerActivity);
+		document.addEventListener(this.ACTION_DEACTIVATED, this.handlerDeactivity);
+	}
+
+	detach() {
+		this.target = null;
+		this.enabled = false;
+		this.activity = null;
+
+		this.KeyboardListener(false);
+
+		document.removeEventListener(this.ACTION_ACTIVATED, this.handlerActivity);
+		document.removeEventListener(
+			this.ACTION_DEACTIVATED,
+			this.handlerDeactivity
+		);
+	}
+
+	isActionActive(actionName) {
+		const isBool =
+			this.enabled &&
+			this.target &&
+			this.actionsToBind[actionName].enabled &&
+			this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el));
+
+		return isBool;
+	}
+
+	/*
+  isAction(keyCode) {
+		let result = false;
+		for (let key in this.actionsToBind) {
+			result = this.actionsToBind[key].keys.some(el => el === keyCode);
+			if (result) {
+				return result;
+			}
+		}
+
+		return result;
+	}*/
 }

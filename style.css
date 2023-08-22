@@ -1,17 +1,42 @@
+.wrapper {
+	display: flex;
+	gap: 40px;
+}
+
+.field {
+	position: relative;
+
+	width: 590px;
+	height: 500px;
+
+	border: 1px solid black;
+
+	overflow: hiddend;
+}
+
 .cube {
-  width: 100px;
-  height: 100px;
+	width: 100px;
+	height: 100px;
 
-  background-color: black;
+	background-color: black;
 
-  border-radius: 50px;
+	border-radius: 50px;
 }
 
 .button {
-  padding: 20px;
-  background-color: white;
+	padding: 20px;
+	background-color: white;
 
-  border: 1px solid black;
+	border: 1px solid black;
 
-  cursor: pointer;
+	cursor: pointer;
+}
+
+.activeStatus {
+	background-color: gray;
+	padding: 5px;
+
+	color: #fff;
+
+	border-radius: 10%;
 }
