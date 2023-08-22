@@ -33,8 +33,20 @@ const target = document.querySelector('.cube')
 const inputController = new InputController(ButtonKey, target)
 inputController.bindActions(jumpKey)
 
-let x = 50
-let y = 50
+
+const setting = {
+    x: 50,
+    y: 50,
+    speed: 1, // в процентах относительно экрана
+    color: 'black',
+    jump: {
+        hightJump: 1, // в процентах относительно экрана
+        cooldown: 1, //в секундах
+        timeInJump: 0.200, //в секундах
+        color: 'blue',
+        
+    }
+}
 
 const attach = document.querySelector('.actived')
 attach.onclick = () => {
@@ -51,38 +63,38 @@ detach.onclick = () => {
 
 const jump = () => {
     setTimeout(() => {
-        y += 1
-        target.style.top = `${y}%`;
-        target.style.backgroundColor = 'black'
+        setting.y += setting.jump.hightJump
+        target.style.top = `${setting.y}%`;
+        target.style.backgroundColor = setting.color
         inputController.disableAction('jump')
-    }, 100)
+    }, setting.jump.timeInJump * 1000)
 
     setTimeout(() => {
         inputController.enableAction('jump')
-    }, 500)
+    }, setting.jump.cooldown * 1000)
 
-    
-    y -= 1;
-    target.style.top = `${y}%`;
-    target.style.backgroundColor = 'blue'
+    setting.y -= setting.jump.hightJump;
+
+    target.style.top = `${setting.y}%`;
+    target.style.backgroundColor = setting.jump.color
 }
 
 const move = () => {
     if (inputController.isActionActive('right')) {
-        x += 0.2;
-        target.style.left = `${x}%`;
+        setting.x += setting.speed;
+        target.style.left = `${setting.x}%`;
     }
     if (inputController.isActionActive('left')) {
-        x -= 0.2;
-        target.style.left = `${x}%`;
+        setting.x -= setting.speed;
+        target.style.left = `${setting.x}%`;
     }
     if (inputController.isActionActive('top')) {
-        y -= 0.2;
-        target.style.top = `${y}%`;
+        setting.y -= setting.speed;
+        target.style.top = `${setting.y}%`;
     }
     if (inputController.isActionActive('bottom')) {
-        y += 0.2;
-        target.style.top = `${y}%`;
+        setting.y += setting.speed;
+        target.style.top = `${setting.y}%`;
     }
 
     if (inputController.isActionActive('jump')) {
