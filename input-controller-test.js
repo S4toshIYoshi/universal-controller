@@ -132,15 +132,22 @@ const move = () => {
     }
   }
 
-  if (
-    inputController.activity !== null &&
-    inputController.deactivity !== null
-  ) {
-    menuActionActive.innerText = inputController.activity
-    menuActionDeactive.innerText = inputController.deactivity
-  } else {
-    menuActionActive.innerText = 'null'
-    menuActionDeactive.innerText = 'null'
+  for (let i = 0; i < menuActionActive.children.length; i++) {
+    if (inputController.activity.has(menuActionActive.children[i].innerText)) {
+      menuActionActive.children[i].classList.add('green')
+    } else {
+      menuActionActive.children[i].classList.remove('green')
+    }
+  }
+
+  for (let i = 0; i < menuActionDeactive.children.length; i++) {
+    if (
+      inputController.deactivity.has(menuActionDeactive.children[i].innerText)
+    ) {
+      menuActionDeactive.children[i].classList.add('green')
+    } else {
+      menuActionDeactive.children[i].classList.remove('green')
+    }
   }
 
   menuFocus.innerText = inputController.isFocus()

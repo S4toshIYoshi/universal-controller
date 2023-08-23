@@ -11,7 +11,6 @@ class KeyBoard {
     this.filingMap(this.actionsToBind)
 
     this.succsesKey = false
-    this.oldSuccsesKey = null
   }
 
   filingMap(bind) {
@@ -28,8 +27,6 @@ class KeyBoard {
   }
 
   searchKey(keyCode) {
-    this.oldSuccsesKey = this.searchKey
-
     if (this.allBindKey.has(keyCode)) {
       this.succsesKey = true
     } else {
@@ -40,11 +37,13 @@ class KeyBoard {
   upKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    this.activity = 'none'
+    this.activity.clear
 
     delete this.pressButton[e.keyCode]
-    if (this.succsesKey && action !== this.deactivity) {
-      this.deactivity = action
+    if (this.succsesKey && !this.deactivity.has(action)) {
+      console.log('render')
+      this.activity.delete(action)
+      this.deactivity.add(action)
       document.dispatchEvent(this.actionDeactivated)
     }
   }
@@ -56,8 +55,10 @@ class KeyBoard {
       this.pressButton[e.keyCode] = e.keyCode
     }
     this.searchKey(e.keyCode)
-    if (this.succsesKey && action !== this.activity) {
-      this.activity = action
+    if (this.succsesKey && !this.activity.has(action)) {
+      console.log('render')
+      this.deactivity.delete(action)
+      this.activity.add(action)
       document.dispatchEvent(this.actionActivated)
     }
   }
@@ -101,8 +102,8 @@ export class InputController extends KeyBoard {
     this.actionActivated = new Event(this.ACTION_ACTIVATED)
     this.actionDeactivated = new Event(this.ACTION_DEACTIVATED)
 
-    this.activity = null
-    this.deactivity = null
+    this.activity = new Set()
+    this.deactivity = new Set()
     this.newAction = null
 
     this.handlerActivity = () => this.activity
