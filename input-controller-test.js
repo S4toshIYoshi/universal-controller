@@ -1,21 +1,25 @@
-import {InputController} from './input-controller.js'
+import {InputController, KeyBoard, Mouse} from './input-controller.js'
 
 const ButtonKey = {
   left: {
     keys: [65, 37],
     enabled: true,
+    mouse: [1],
   },
   right: {
     keys: [68, 39],
     enabled: true,
+    mouse: [3],
   },
   top: {
     keys: [87, 38],
     enabled: true,
+    mouse: [],
   },
   bottom: {
     keys: [83, 40],
     enabled: true,
+    mouse: [],
   },
 }
 
@@ -23,12 +27,16 @@ const jumpKey = {
   jump: {
     keys: [32],
     enabled: true,
+    mouse: [2],
   },
 }
 
 const target = document.querySelector('.cube')
 
 const inputController = new InputController(ButtonKey)
+const pluginKeyBoard = new KeyBoard(ButtonKey)
+const pluginMouse = new Mouse(ButtonKey)
+inputController.registerPlugin(pluginKeyBoard, pluginMouse)
 
 const setting = {
   x: 50,
