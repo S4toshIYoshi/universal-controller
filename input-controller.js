@@ -93,6 +93,11 @@ export class Mouse {
       this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
     )
   }
+
+  updateActivity(activity, deactivity) {
+    this.activity = activity
+    this.deactivity = deactivity
+  }
 }
 
 export class KeyBoard {
@@ -125,6 +130,11 @@ export class KeyBoard {
     this.actionDeactivated = actionDeactivated
   }
 
+  updateActivity(activity, deactivity) {
+    this.activity = activity
+    this.deactivity = deactivity
+  }
+
   filingMap(bind) {
     if (bind) {
       for (let key in bind) {
@@ -149,7 +159,7 @@ export class KeyBoard {
   upKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    this.activity.clear
+    this.activity.clear()
 
     delete this.pressButton[e.keyCode]
     if (this.succsesKey && !this.deactivity.has(action)) {
@@ -219,11 +229,14 @@ export class InputController {
     this.newAction = null
 
     this.handlerActivity = () => {
-      this.activity
+      console.log('render')
+      this.deactivity.clear()
+      this.updateSet()
     }
 
     this.handlerDeactivity = () => {
-      this.deactivity
+      this.activity.clear()
+      this.updateSet()
     }
   }
 
@@ -258,13 +271,11 @@ export class InputController {
   }
 
   detach() {
-    this.target = null
-    this.enabled = false
-    this.activity = null
-
     this.plugins.forEach(el => {
       el.listener(false)
     })
+    this.target = null
+    this.enabled = false
 
     document.removeEventListener(this.ACTION_ACTIVATED, this.handlerActivity)
     document.removeEventListener(
@@ -274,8 +285,6 @@ export class InputController {
   }
 
   isActionActive(actionName) {
-    this.updateSet()
-
     const isBool =
       this.focused &&
       this.enabled &&
@@ -291,10 +300,6 @@ export class InputController {
     return this.plugins.some(el => {
       return el.buttonsActive(keyCode)
     })
-
-    // return (
-    //   this.pressButton.hasOwnProperty(keyCode) && this.allBindKey.get(keyCode)
-    // )
   }
 
   isFocus() {
@@ -314,11 +319,21 @@ export class InputController {
   }
 
   updateSet() {
-    this.activity.clear()
-    this.deactivity.clear()
-    this.plugins.forEach(el => {
-      this.activity.add(...el.activity)
-      this.deactivity.add(...el.activity)
+    this.plugins.reduce((acc, el) => {
+      if (el.activity) {
+        this.activity = new Set([
+          ...this.activity,
+          ...acc.activity,
+          ...el.activity,
+        ])
+        this.deactivity = new Set([
+          ...this.deactivity,
+          ...acc.deactivity,
+          ...el.deactivity,
+        ])
+
+        el.updateActivity(this.activity, this.deactivity)
+      }
     })
   }
 }
