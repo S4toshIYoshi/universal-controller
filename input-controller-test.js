@@ -65,14 +65,32 @@ deactiveController.onclick = () => {
   inputController.enabled = false
 }
 
-const bind = document.querySelector('.bind')
-bind.onclick = () => {
-  inputController.bindActions(jumpKey)
-}
-
 const menuActionActive = document.getElementById('actionActive')
 const menuActionDeactive = document.getElementById('actionDeactive')
 const menuFocus = document.getElementById('focused')
+
+const bind = document.querySelector('.bind')
+bind.onclick = e => {
+  e.preventDefault()
+
+  inputController.bindActions(jumpKey)
+  const newObj = document.createElement('li')
+  newObj.innerText = 'jump'
+
+  if (
+    menuActionActive.children[menuActionActive.children.length - 1]
+      .innerText !== 'jump'
+  ) {
+    menuActionActive.append(newObj)
+  }
+
+  if (
+    menuActionDeactive.children[menuActionDeactive.children.length - 1]
+      .innerText !== 'jump'
+  ) {
+    menuActionDeactive.append(newObj)
+  }
+}
 
 const jump = () => {
   setTimeout(() => {
