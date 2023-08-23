@@ -74,21 +74,19 @@ bind.onclick = e => {
   e.preventDefault()
 
   inputController.bindActions(jumpKey)
-  const newObj = document.createElement('li')
-  newObj.innerText = 'jump'
+  const newObjA = document.createElement('li')
+  const newObjB = document.createElement('li')
+  newObjA.innerText = 'jump'
+  newObjB.innerText = 'jump'
 
   if (
     menuActionActive.children[menuActionActive.children.length - 1]
-      .innerText !== 'jump'
-  ) {
-    menuActionActive.append(newObj)
-  }
-
-  if (
+      .innerText !== 'jump' &&
     menuActionDeactive.children[menuActionDeactive.children.length - 1]
       .innerText !== 'jump'
   ) {
-    menuActionDeactive.append(newObj)
+    menuActionActive.append(newObjA)
+    menuActionDeactive.append(newObjB)
   }
 }
 
