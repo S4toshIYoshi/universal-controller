@@ -1,351 +1,233 @@
-export class Mouse {
-  activity
-  deactivity
+export class BasePlugin {
+	constructor(actionsToBind) {
+		this.actionsToBind = actionsToBind;
 
-  constructor(actionsToBind) {
-    this.actionsToBind = actionsToBind
+		this.pressButton = {};
 
-    this.pressButton = {}
+		this.allBindKey = new Map();
+		this.filingMap(this.actionsToBind);
 
-    this.handlerUpKey = this.upKey.bind(this)
-    this.handlerDownKey = this.downKey.bind(this)
+		this.succsesKey = false;
 
-    this.allBindKey = new Map()
-    this.filingMap(this.actionsToBind)
+		this.actionActivated = [];
+		this.actionDeactivated = [];
+	}
 
-    this.succsesKey = false
+	initEventsActive(...events) {
+		this.actionActivated.push(...events);
+	}
 
-    this.activity = new Set()
-    this.deactivity = new Set()
+	initEventsDeactive(...events) {
+		this.actionDeactivated.push(...events);
+	}
 
-    this.actionActivated = null
-    this.actionDeactivated = null
-  }
+	updateActivity(activity, deactivity) {
+		this.activity = activity;
+		this.deactivity = deactivity;
+	}
 
-  initEvents(...events) {
-    const [actionActivated, actionDeactivated] = events
-    this.actionActivated = actionActivated
-    this.actionDeactivated = actionDeactivated
-  }
+	updateMap(newBind) {
+		this.allBindKey.clear();
+		this.filingMap(newBind);
+	}
 
-  updateActivity(activity, deactivity) {
-    this.activity = activity
-    this.deactivity = deactivity
-  }
+	searchKey(keyCode) {
+		if (this.allBindKey.has(keyCode)) {
+			this.succsesKey = true;
+		} else {
+			this.succsesKey = false;
+		}
+	}
 
-  filingMap(bind) {
-    if (bind) {
-      for (let key in bind) {
-        this.actionsToBind[key].mouse.forEach(el => {
-          if (el) {
-            this.allBindKey.set(el, key)
-          }
-        })
-      }
-    }
-  }
+	buttonsActive(keyCode) {
+		return (
+			this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
+		);
+	}
 
-  updateMap(newBind) {
-    this.allBindKey.clear()
-    this.filingMap(newBind)
-  }
+	/**
+	 * @description type -  *тип который должен быть в ивенте чтобы событие задиспатчилось*
+	 * @description activated -  *по каким ивентам искать: true - активирующим, false - деактивирующим**
+	 * @description conditions -  *условие при которм выполниться поиск по ивентам, по умолчанию true*
+	 * @param {string} type
+	 * @param {bool} activated
+	 * @param {bool} conditions
+	 *
+	 */
+	generationDispath(type, activated, conditions = true) {
+		if (conditions) {
+			if (activated) {
+				this.actionActivated.forEach(el => {
+					if (el.detail.type === type) {
+						document.dispatchEvent(el);
+					}
+				});
+			} else {
+				this.actionDeactivated.forEach(el => {
+					if (el.detail.type === type) {
+						document.dispatchEvent(el);
+					}
+				});
+			}
+		}
+	}
 
-  searchKey(keyCode) {
-    if (this.allBindKey.has(keyCode)) {
-      this.succsesKey = true
-    } else {
-      this.succsesKey = false
-    }
-  }
-
-  upKey(e) {
-    let action = this.allBindKey.get(e.which)
-
-    this.activity.clear()
-
-    delete this.pressButton[e.which]
-
-    if (this.succsesKey && !this.deactivity.has(action)) {
-      this.activity.delete(action)
-      this.deactivity.add(action)
-
-      document.dispatchEvent(this.actionDeactivated)
-    }
-  }
-
-  downKey(e) {
-    let action = this.allBindKey.get(e.which)
-
-    if (!this.buttonsActive(e.which)) {
-      this.pressButton[e.which] = e.which
-    }
-
-    this.searchKey(e.which)
-
-    if (this.succsesKey && !this.activity.has(action)) {
-      this.activity.add(action)
-      this.deactivity.delete(action)
-
-      console.log('renderMouse')
-
-      document.dispatchEvent(this.actionActivated)
-    }
-  }
-
-  listener(show) {
-    if (show) {
-      document.addEventListener('mousedown', this.handlerDownKey)
-      document.addEventListener('mouseup', this.handlerUpKey)
-    } else {
-      document.removeEventListener('mousedown', this.handlerDownKey)
-      document.removeEventListener('mouseup', this.handlerUpKey)
-    }
-  }
-
-  buttonsActive(keyCode) {
-    return (
-      this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
-    )
-  }
-}
-
-export class KeyBoard {
-  activity
-  deactivity
-
-  constructor(actionsToBind) {
-    this.actionsToBind = actionsToBind
-
-    this.pressButton = {}
-
-    this.handlerUpKey = this.upKey.bind(this)
-    this.handlerDownKey = this.downKey.bind(this)
-
-    this.allBindKey = new Map()
-    this.filingMap(this.actionsToBind)
-
-    this.succsesKey = false
-
-    this.activity = new Set()
-    this.deactivity = new Set()
-
-    this.actionActivated = null
-    this.actionDeactivated = null
-  }
-
-  initEvents(...events) {
-    const [actionActivated, actionDeactivated] = events
-    this.actionActivated = actionActivated
-    this.actionDeactivated = actionDeactivated
-  }
-
-  updateActivity(activity, deactivity) {
-    this.activity = activity
-    this.deactivity = deactivity
-  }
-
-  filingMap(bind) {
-    if (bind) {
-      for (let key in bind) {
-        this.actionsToBind[key].keys.forEach(el => this.allBindKey.set(el, key))
-      }
-    }
-  }
-
-  updateMap(newBind) {
-    this.allBindKey.clear()
-    this.filingMap(newBind)
-  }
-
-  searchKey(keyCode) {
-    if (this.allBindKey.has(keyCode)) {
-      this.succsesKey = true
-    } else {
-      this.succsesKey = false
-    }
-  }
-
-  upKey(e) {
-    let action = this.allBindKey.get(e.keyCode)
-
-    this.activity.clear()
-
-    delete this.pressButton[e.keyCode]
-    if (this.succsesKey && !this.deactivity.has(action)) {
-      this.activity.delete(action)
-      this.deactivity.add(action)
-      document.dispatchEvent(this.actionDeactivated)
-    }
-  }
-
-  downKey(e) {
-    let action = this.allBindKey.get(e.keyCode)
-
-    if (!this.buttonsActive(e.keyCode)) {
-      this.pressButton[e.keyCode] = e.keyCode
-    }
-    this.searchKey(e.keyCode)
-    if (this.succsesKey && !this.activity.has(action)) {
-      this.deactivity.delete(action)
-      this.activity.add(action)
-      console.log('renderKey')
-      document.dispatchEvent(this.actionActivated)
-    }
-  }
-
-  listener(show) {
-    if (show) {
-      document.addEventListener('keydown', this.handlerDownKey)
-      document.addEventListener('keyup', this.handlerUpKey)
-    } else {
-      document.removeEventListener('keydown', this.handlerDownKey)
-      document.removeEventListener('keyup', this.handlerUpKey)
-    }
-  }
-
-  buttonsActive(keyCode) {
-    return (
-      this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
-    )
-  }
+	generationListener(eventType, handler, show) {
+		if (show) {
+			document.addEventListener(eventType, handler);
+		} else {
+			document.removeEventListener(eventType, handler);
+		}
+	}
 }
 
 export class InputController {
-  enabled
-  focused
-  ACTION_ACTIVATED = 'input-controller:action-activated'
-  ACTION_DEACTIVATED = 'input-controller:action-deactivated'
+	enabled;
+	focused;
+	ACTION_ACTIVATED = 'input-controller:action-activated';
+	ACTION_DEACTIVATED = 'input-controller:action-deactivated';
 
-  plugins
+	plugins;
 
-  target
-  activity
-  deactivity
-  newAction
+	target;
+	activity;
+	deactivity;
+	newAction;
 
-  constructor(actionsToBind, target = null) {
-    this.actionsToBind = actionsToBind
+	constructor(actionsToBind, target = null) {
+		this.actionsToBind = actionsToBind;
 
-    this.plugins = []
+		this.plugins = [];
 
-    this.target = target
-    this.enabled = false
+		this.target = target;
+		this.enabled = false;
 
-    this.actionActivated = new Event(this.ACTION_ACTIVATED)
-    this.actionDeactivated = new Event(this.ACTION_DEACTIVATED)
+		this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
+			detail: {
+				type: 'click',
+				active: 'active',
+			},
+		});
+		this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
+			detail: {
+				type: 'click',
+				active: 'deactive',
+			},
+		});
 
-    this.activity = new Set()
-    this.deactivity = new Set()
-    this.newAction = null
+		this.activity = new Set();
+		this.deactivity = new Set();
+		this.newAction = null;
 
-    this.handlerActivity = () => {
-      this.deactivity.clear()
-      this.updateSet()
-    }
+		this.handlerActivity = () => {
+			this.deactivity.clear();
+			this.updateSet();
+		};
 
-    this.handlerDeactivity = () => {
-      this.activity.clear()
-      this.updateSet()
-    }
-  }
+		this.handlerDeactivity = () => {
+			this.activity.clear();
+			this.updateSet();
+		};
+	}
 
-  bindActions(actionsToBind) {
-    this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind)
-    this.plugins.forEach(el => el.updateMap(this.actionsToBind))
-  }
+	bindActions(actionsToBind) {
+		this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind);
+		this.plugins.forEach(el => el.updateMap(this.actionsToBind));
+	}
 
-  enableAction(actionName) {
-    if (this.enabled && this.target) {
-      this.actionsToBind[actionName].enabled = true
-    }
-  }
+	enableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = true;
+		}
+	}
 
-  disableAction(actionName) {
-    if (this.enabled && this.target) {
-      this.actionsToBind[actionName].enabled = false
-    }
-  }
+	disableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = false;
+		}
+	}
 
-  attach(target, dontEnable) {
-    this.target = target
-    this.enabled = !!dontEnable ? false : true
+	attach(target, dontEnable) {
+		this.target = target;
+		this.enabled = !!dontEnable ? false : true;
 
-    this.plugins.forEach(el => {
-      el.initEvents(this.actionActivated, this.actionDeactivated)
-      el.listener(true)
-    })
+		this.plugins.forEach(el => {
+			el.initEventsActive(this.actionActivated);
+			el.initEventsDeactive(this.actionDeactivated);
+			el.listener(true);
+		});
 
-    document.addEventListener(this.ACTION_ACTIVATED, this.handlerActivity)
-    document.addEventListener(this.ACTION_DEACTIVATED, this.handlerDeactivity)
-  }
+		document.addEventListener(this.ACTION_ACTIVATED, this.handlerActivity);
+		document.addEventListener(this.ACTION_DEACTIVATED, this.handlerDeactivity);
+	}
 
-  detach() {
-    this.plugins.forEach(el => {
-      el.listener(false)
-    })
-    this.target = null
-    this.enabled = false
+	detach() {
+		this.plugins.forEach(el => {
+			el.listener(false);
+		});
+		this.target = null;
+		this.enabled = false;
 
-    document.removeEventListener(this.ACTION_ACTIVATED, this.handlerActivity)
-    document.removeEventListener(
-      this.ACTION_DEACTIVATED,
-      this.handlerDeactivity
-    )
-  }
+		document.removeEventListener(this.ACTION_ACTIVATED, this.handlerActivity);
+		document.removeEventListener(
+			this.ACTION_DEACTIVATED,
+			this.handlerDeactivity
+		);
+	}
 
-  isActionActive(actionName) {
-    const isBool =
-      this.focused &&
-      this.enabled &&
-      this.target &&
-      this.actionsToBind[actionName].enabled &&
-      (this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el)) ||
-        this.actionsToBind[actionName].mouse.some(el => this.isKeyPressed(el)))
+	isActionActive(actionName) {
+		const isBool =
+			this.focused &&
+			this.enabled &&
+			this.target &&
+			this.actionsToBind[actionName].enabled &&
+			(this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el)) ||
+				this.actionsToBind[actionName].mouse.some(el => this.isKeyPressed(el)));
 
-    return isBool
-  }
+		return isBool;
+	}
 
-  isKeyPressed(keyCode) {
-    return this.plugins.some(el => {
-      return el.buttonsActive(keyCode)
-    })
-  }
+	isKeyPressed(keyCode) {
+		return this.plugins.some(el => {
+			return el.buttonsActive(keyCode);
+		});
+	}
 
-  isFocus() {
-    this.focused = document.hasFocus()
+	isFocus() {
+		this.focused = document.hasFocus();
 
-    if (!this.focused) {
-      this.focused = false
-    } else {
-      this.focused = true
-    }
+		if (!this.focused) {
+			this.focused = false;
+		} else {
+			this.focused = true;
+		}
 
-    return this.focused
-  }
+		return this.focused;
+	}
 
-  registerPlugin(...arg) {
-    this.plugins.push(...arg)
-    console.log(this.plugins)
-  }
+	registerPlugin(...arg) {
+		this.plugins.push(...arg);
+		console.log(this.plugins);
+	}
 
-  updateSet() {
-    this.plugins.reduce((acc, el) => {
-      if (el.activity && el.deactivity) {
-        this.activity = new Set([
-          ...this.activity,
-          ...el.activity,
-          ...acc.activity,
-        ])
-        this.deactivity = new Set([
-          ...el.deactivity,
-          ...acc.deactivity,
-          ...this.deactivity,
-        ])
-      }
-    })
+	updateSet() {
+		this.plugins.reduce((acc, el) => {
+			if (el.activity && el.deactivity) {
+				this.activity = new Set([
+					...this.activity,
+					...el.activity,
+					...acc.activity,
+				]);
+				this.deactivity = new Set([
+					...el.deactivity,
+					...acc.deactivity,
+					...this.deactivity,
+				]);
+			}
+		});
 
-    this.plugins.forEach(el =>
-      el.updateActivity(this.activity, this.deactivity)
-    )
-  }
+		this.plugins.forEach(el =>
+			el.updateActivity(this.activity, this.deactivity)
+		);
+	}
 }
