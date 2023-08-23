@@ -36,7 +36,12 @@ const target = document.querySelector('.cube')
 const inputController = new InputController(ButtonKey)
 const pluginKeyBoard = new KeyBoard(ButtonKey)
 const pluginMouse = new Mouse(ButtonKey)
-inputController.registerPlugin(pluginKeyBoard, pluginMouse)
+
+const plugins = {
+  Mouse: pluginMouse,
+  KeyBoard: pluginKeyBoard,
+}
+
 inputController.registerPlugin(pluginKeyBoard, pluginMouse)
 
 const setting = {

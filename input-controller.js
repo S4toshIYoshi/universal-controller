@@ -28,14 +28,20 @@ export class Mouse {
     this.actionDeactivated = actionDeactivated
   }
 
+  updateActivity(activity, deactivity) {
+    this.activity = activity
+    this.deactivity = deactivity
+  }
+
   filingMap(bind) {
     if (bind) {
       for (let key in bind) {
-        this.actionsToBind[key].mouse.forEach(el =>
-          this.allBindKey.set(el, key)
-        )
+        this.actionsToBind[key].mouse.forEach(el => {
+          if (el) {
+            this.allBindKey.set(el, key)
+          }
+        })
       }
-      console.log(this.pressButton)
     }
   }
 
@@ -55,13 +61,14 @@ export class Mouse {
   upKey(e) {
     let action = this.allBindKey.get(e.which)
 
-    this.activity.clear
+    this.activity.clear()
 
     delete this.pressButton[e.which]
 
     if (this.succsesKey && !this.deactivity.has(action)) {
       this.activity.delete(action)
       this.deactivity.add(action)
+
       document.dispatchEvent(this.actionDeactivated)
     }
   }
@@ -69,13 +76,18 @@ export class Mouse {
   downKey(e) {
     let action = this.allBindKey.get(e.which)
 
-    this.pressButton[e.which] = e.which
+    if (!this.buttonsActive(e.which)) {
+      this.pressButton[e.which] = e.which
+    }
 
     this.searchKey(e.which)
+
     if (this.succsesKey && !this.activity.has(action)) {
-      this.deactivity.delete(action)
       this.activity.add(action)
+      this.deactivity.delete(action)
+
       console.log('renderMouse')
+
       document.dispatchEvent(this.actionActivated)
     }
   }
@@ -94,11 +106,6 @@ export class Mouse {
     return (
       this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
     )
-  }
-
-  updateActivity(activity, deactivity) {
-    this.activity = activity
-    this.deactivity = deactivity
   }
 }
 
@@ -201,11 +208,6 @@ export class KeyBoard {
       this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
     )
   }
-
-  updateActivity(activity, deactivity) {
-    this.activity = activity
-    this.deactivity = deactivity
-  }
 }
 
 export class InputController {
@@ -239,11 +241,13 @@ export class InputController {
     this.handlerActivity = () => {
       this.deactivity.clear()
       this.updateSet()
+      console.log(this.activity)
     }
 
     this.handlerDeactivity = () => {
       this.activity.clear()
       this.updateSet()
+      console.log(this.deactivity)
     }
   }
 
@@ -322,12 +326,12 @@ export class InputController {
   }
 
   registerPlugin(...arg) {
-    arg.forEach(el => this.plugins.push(el))
+    this.plugins.push(...arg)
   }
 
   updateSet() {
     this.plugins.forEach(el => {
-      if (el.activity) {
+      if (el.activity && el.deactivity) {
         this.activity = new Set([...this.activity, ...el.activity])
         this.deactivity = new Set([...this.deactivity, ...el.deactivity])
 
