@@ -15,9 +15,11 @@ export class Mouse extends BasePlugin {
 	filingMap(bind) {
 		if (bind) {
 			for (let key in bind) {
-				this.actionsToBind[key].mouse.forEach(el =>
-					this.allBindKey.set(el, key)
-				);
+				if (this.actionsToBind[key].mouse) {
+					this.actionsToBind[key].mouse.forEach(el =>
+						this.allBindKey.set(el, key)
+					);
+				}
 			}
 		}
 	}
@@ -32,7 +34,7 @@ export class Mouse extends BasePlugin {
 			this.activity.delete(action);
 			this.deactivity.add(action);
 
-			this.generationDispath('click', false);
+			super.generationDispath('click', false);
 		}
 	}
 
@@ -48,7 +50,7 @@ export class Mouse extends BasePlugin {
 			this.activity.add(action);
 			console.log('renderMouse');
 
-			this.generationDispath('click', true);
+			super.generationDispath('click', true);
 		}
 	}
 
@@ -101,7 +103,7 @@ export class KeyBoard extends BasePlugin {
 			this.activity.delete(action);
 			this.deactivity.add(action);
 
-			this.generationDispath('click', false);
+			super.generationDispath('click', false);
 		}
 	}
 
@@ -117,7 +119,7 @@ export class KeyBoard extends BasePlugin {
 			this.activity.add(action);
 			console.log('renderKey');
 
-			this.generationDispath('click', true);
+			super.generationDispath('click', true);
 		}
 	}
 

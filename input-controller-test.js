@@ -14,18 +14,11 @@ const ButtonKey = {
 	},
 	top: {
 		keys: [87, 38],
-		mouse: [],
 		enabled: true,
 	},
 	bottom: {
 		keys: [83, 40],
 		enabled: true,
-		mouse: [],
-	},
-	popup: {
-		keys: [],
-		enabled: true,
-		mouse: [],
 	},
 };
 
@@ -78,6 +71,23 @@ activeController.onclick = () => {
 const deactiveController = document.querySelector('.deactiveController');
 deactiveController.onclick = () => {
 	inputController.enabled = false;
+};
+
+const advertising = document.querySelector('.showAdvertising');
+
+const popupKey = {
+	popup: {
+		keys: [81],
+		enabled: true,
+	},
+};
+const popup = document.querySelector('.popup');
+advertising.onclick = () => {
+	popup.style.display = 'block';
+
+	inputController.detach();
+	inputController.attach(popup, false);
+	inputController.bindActions(popupKey);
 };
 
 const menuActionActive = document.getElementById('actionActive');
@@ -141,25 +151,52 @@ const restrictions = (top, left) => {
 const move = () => {
 	restrictions(parseInt(target.style.top), parseInt(target.style.left));
 
-	if (inputController.isActionActive('right')) {
+	if (
+		inputController.isActionActive('right') &&
+		inputController.target === target
+	) {
 		setting.x += setting.speed;
 		target.style.left = `${setting.x}%`;
 	}
-	if (inputController.isActionActive('left')) {
+	if (
+		inputController.isActionActive('left') &&
+		inputController.target === target
+	) {
 		setting.x -= setting.speed;
 		target.style.left = `${setting.x}%`;
 	}
-	if (inputController.isActionActive('top')) {
+	if (
+		inputController.isActionActive('top') &&
+		inputController.target === target
+	) {
 		setting.y -= setting.speed;
 		target.style.top = `${setting.y}%`;
 	}
-	if (inputController.isActionActive('bottom')) {
+	if (
+		inputController.isActionActive('bottom') &&
+		inputController.target === target
+	) {
 		setting.y += setting.speed;
 		target.style.top = `${setting.y}%`;
 	}
 	if (inputController.actionsToBind['jump']) {
-		if (inputController.isActionActive('jump')) {
+		if (
+			inputController.isActionActive('jump') &&
+			inputController.target === target
+		) {
 			jump();
+		}
+	}
+
+	if (inputController.actionsToBind['popup']) {
+		if (
+			inputController.isActionActive('popup') &&
+			inputController.target === popup
+		) {
+			popup.style.display = 'none';
+
+			inputController.detach();
+			inputController.attach(target, false);
 		}
 	}
 

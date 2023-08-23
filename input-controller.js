@@ -87,6 +87,8 @@ export class InputController {
 	ACTION_ACTIVATED = 'input-controller:action-activated';
 	ACTION_DEACTIVATED = 'input-controller:action-deactivated';
 
+	ACTION_ADVERTISING_DEACTIVATED = 'input-controller:advertising-deactevated';
+
 	plugins;
 
 	target;
@@ -114,6 +116,16 @@ export class InputController {
 				active: 'deactive',
 			},
 		});
+
+		this.actionAdvertising = new CustomEvent(
+			this.ACTION_ADVERTISING_DEACTIVATED,
+			{
+				detail: {
+					type: 'click',
+					active: 'deactive',
+				},
+			}
+		);
 
 		this.activity = new Set();
 		this.deactivity = new Set();
@@ -153,12 +165,16 @@ export class InputController {
 
 		this.plugins.forEach(el => {
 			el.initEventsActive(this.actionActivated);
-			el.initEventsDeactive(this.actionDeactivated);
+			el.initEventsDeactive(this.actionDeactivated, this.actionAdvertising);
 			el.listener(true);
 		});
 
 		document.addEventListener(this.ACTION_ACTIVATED, this.handlerActivity);
 		document.addEventListener(this.ACTION_DEACTIVATED, this.handlerDeactivity);
+		document.addEventListener(
+			this.ACTION_ADVERTISING_DEACTIVATED,
+			this.handlerDeactivity
+		);
 	}
 
 	detach() {
@@ -173,6 +189,10 @@ export class InputController {
 			this.ACTION_DEACTIVATED,
 			this.handlerDeactivity
 		);
+		document.removeEventListener(
+			this.ACTION_ADVERTISING_DEACTIVATED,
+			this.handlerDeactivity
+		);
 	}
 
 	isActionActive(actionName) {
@@ -181,8 +201,7 @@ export class InputController {
 			this.enabled &&
 			this.target &&
 			this.actionsToBind[actionName].enabled &&
-			(this.actionsToBind[actionName].keys.some(el => this.isKeyPressed(el)) ||
-				this.actionsToBind[actionName].mouse.some(el => this.isKeyPressed(el)));
+			this.isPresent(this.actionsToBind[actionName], ['keys', 'mouse']);
 
 		return isBool;
 	}
@@ -229,5 +248,19 @@ export class InputController {
 		this.plugins.forEach(el =>
 			el.updateActivity(this.activity, this.deactivity)
 		);
+	}
+
+	isKey(obj, key) {
+		return typeof obj[key] === 'object';
+	}
+
+	isPresent(obj, key = []) {
+		const result = key.map(key => {
+			if (this.isKey(obj, key)) {
+				return obj[key].some(el => this.isKeyPressed(el));
+			}
+		});
+
+		return result.some(el => el);
 	}
 }

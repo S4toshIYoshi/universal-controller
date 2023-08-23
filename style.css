@@ -1,3 +1,7 @@
+body {
+	position: relative;
+}
+
 .wrapper {
 	display: flex;
 	gap: 40px;
@@ -43,4 +47,36 @@
 
 .green {
 	color: red;
+}
+
+.popup {
+	display: none;
+
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+
+	background-color: #fff;
+
+	z-index: 10;
+}
+
+.content {
+	width: 90%;
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.link {
+	font-size: 30px;
+	text-decoration: none;
 }
