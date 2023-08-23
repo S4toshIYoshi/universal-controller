@@ -43,7 +43,7 @@ class KeyBoard {
     this.activity = 'none'
 
     delete this.pressButton[e.keyCode]
-    if (this.succsesKey && action) {
+    if (this.succsesKey && action !== this.deactivity) {
       this.deactivity = action
       document.dispatchEvent(this.actionDeactivated)
     }
@@ -56,7 +56,7 @@ class KeyBoard {
       this.pressButton[e.keyCode] = e.keyCode
     }
     this.searchKey(e.keyCode)
-    if (this.succsesKey && action) {
+    if (this.succsesKey && action !== this.activity) {
       this.activity = action
       document.dispatchEvent(this.actionActivated)
     }
