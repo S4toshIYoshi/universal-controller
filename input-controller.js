@@ -241,13 +241,11 @@ export class InputController {
     this.handlerActivity = () => {
       this.deactivity.clear()
       this.updateSet()
-      console.log(this.activity)
     }
 
     this.handlerDeactivity = () => {
       this.activity.clear()
       this.updateSet()
-      console.log(this.deactivity)
     }
   }
 
@@ -327,13 +325,22 @@ export class InputController {
 
   registerPlugin(...arg) {
     this.plugins.push(...arg)
+    console.log(this.plugins)
   }
 
   updateSet() {
-    this.plugins.forEach(el => {
+    this.plugins.reduce((acc, el) => {
       if (el.activity && el.deactivity) {
-        this.activity = new Set([...this.activity, ...el.activity])
-        this.deactivity = new Set([...this.deactivity, ...el.deactivity])
+        this.activity = new Set([
+          ...this.activity,
+          ...el.activity,
+          ...acc.activity,
+        ])
+        this.deactivity = new Set([
+          ...el.deactivity,
+          ...acc.deactivity,
+          ...this.deactivity,
+        ])
 
         el.updateActivity(this.activity, this.deactivity)
       }
