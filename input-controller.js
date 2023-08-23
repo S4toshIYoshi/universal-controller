@@ -75,6 +75,7 @@ export class Mouse {
       this.deactivity.delete(action)
       this.activity.add(action)
       document.dispatchEvent(this.actionActivated)
+      console.log('render')
     }
   }
 
@@ -177,6 +178,7 @@ export class KeyBoard {
     }
     this.searchKey(e.keyCode)
     if (this.succsesKey && !this.activity.has(action)) {
+      console.log('render')
       this.deactivity.delete(action)
       this.activity.add(action)
       document.dispatchEvent(this.actionActivated)
@@ -229,7 +231,6 @@ export class InputController {
     this.newAction = null
 
     this.handlerActivity = () => {
-      console.log('render')
       this.deactivity.clear()
       this.updateSet()
     }
