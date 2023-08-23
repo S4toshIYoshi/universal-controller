@@ -58,6 +58,7 @@ export class Mouse {
     this.activity.clear
 
     delete this.pressButton[e.which]
+
     if (this.succsesKey && !this.deactivity.has(action)) {
       this.activity.delete(action)
       this.deactivity.add(action)
@@ -74,8 +75,8 @@ export class Mouse {
     if (this.succsesKey && !this.activity.has(action)) {
       this.deactivity.delete(action)
       this.activity.add(action)
+      console.log('renderMouse')
       document.dispatchEvent(this.actionActivated)
-      console.log('render')
     }
   }
 
@@ -178,9 +179,9 @@ export class KeyBoard {
     }
     this.searchKey(e.keyCode)
     if (this.succsesKey && !this.activity.has(action)) {
-      console.log('render')
       this.deactivity.delete(action)
       this.activity.add(action)
+      console.log('renderKey')
       document.dispatchEvent(this.actionActivated)
     }
   }
@@ -199,6 +200,11 @@ export class KeyBoard {
     return (
       this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
     )
+  }
+
+  updateActivity(activity, deactivity) {
+    this.activity = activity
+    this.deactivity = deactivity
   }
 }
 
@@ -320,18 +326,10 @@ export class InputController {
   }
 
   updateSet() {
-    this.plugins.reduce((acc, el) => {
+    this.plugins.forEach(el => {
       if (el.activity) {
-        this.activity = new Set([
-          ...this.activity,
-          ...acc.activity,
-          ...el.activity,
-        ])
-        this.deactivity = new Set([
-          ...this.deactivity,
-          ...acc.deactivity,
-          ...el.deactivity,
-        ])
+        this.activity = new Set([...this.activity, ...el.activity])
+        this.deactivity = new Set([...this.deactivity, ...el.deactivity])
 
         el.updateActivity(this.activity, this.deactivity)
       }
