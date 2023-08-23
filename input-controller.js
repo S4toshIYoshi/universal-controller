@@ -38,22 +38,26 @@ class KeyBoard {
   }
 
   upKey(e) {
-    this.deactivity = this.allBindKey.get(e.keyCode)
+    let action = this.allBindKey.get(e.keyCode)
+
     this.activity = 'none'
 
     delete this.pressButton[e.keyCode]
-    if (this.succsesKey) {
+    if (this.succsesKey && action) {
+      this.deactivity = action
       document.dispatchEvent(this.actionDeactivated)
     }
   }
 
   downKey(e) {
+    let action = this.allBindKey.get(e.keyCode)
+
     if (!this.isKeyPressed(e.keyCode)) {
       this.pressButton[e.keyCode] = e.keyCode
-      this.activity = this.allBindKey.get(e.keyCode)
     }
     this.searchKey(e.keyCode)
-    if (this.succsesKey) {
+    if (this.succsesKey && action) {
+      this.activity = action
       document.dispatchEvent(this.actionActivated)
     }
   }
