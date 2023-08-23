@@ -341,9 +341,11 @@ export class InputController {
           ...acc.deactivity,
           ...this.deactivity,
         ])
-
-        el.updateActivity(this.activity, this.deactivity)
       }
     })
+
+    this.plugins.forEach(el =>
+      el.updateActivity(this.activity, this.deactivity)
+    )
   }
 }
