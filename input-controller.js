@@ -105,9 +105,9 @@ export class InputController extends KeyBoard {
     this.deactivity = null
     this.newAction = null
 
-    this.handlerActivity = (() => this.activity).bind(this)
+    this.handlerActivity = () => this.activity
 
-    this.handlerDeactivity = (() => this.deactivity).bind(this)
+    this.handlerDeactivity = () => this.deactivity
   }
 
   bindActions(actionsToBind) {
@@ -153,6 +153,7 @@ export class InputController extends KeyBoard {
 
   isActionActive(actionName) {
     const isBool =
+      this.focused &&
       this.enabled &&
       this.target &&
       this.actionsToBind[actionName].enabled &&
@@ -165,12 +166,12 @@ export class InputController extends KeyBoard {
     this.focused = document.hasFocus()
 
     if (!this.focused) {
-      this.enabled = false
+      this.focused = false
     } else {
-      this.enabled = true
+      this.focused = true
     }
 
-    return this.enabled
+    return this.focused
   }
   /*
   isAction(keyCode) {
