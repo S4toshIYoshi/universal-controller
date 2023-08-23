@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="style.css" />
-		<title>Universal input</title>
-	</head>
-	<body>
-		<button class="actived button">attach</button>
-		<button class="deactived button">detach</button>
-		<button class="activeController button">active controller</button>
-		<button class="deactiveController button">deactive controller</button>
-		<button class="bind button">bind dop active</button>
-		<div class="wrapper">
-			<div class="field">
-				<div class="cube" style="position: absolute; top: 50%; left: 50%"></div>
-			</div>
-			<div class="informationMenu">
-				<p>
-					input-controller:action-activated:
-					<span id="actionActive" class="activeStatus">null</span>
-				</p>
-				<p>
-					input-controller:action-deactivated:
-					<span id="actionDeactive" class="activeStatus">null</span>
-				</p>
-			</div>
-		</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Universal input</title>
+  </head>
+  <body>
+    <button class="actived button">attach</button>
+    <button class="deactived button">detach</button>
+    <button class="activeController button">active controller</button>
+    <button class="deactiveController button">deactive controller</button>
+    <button class="bind button">bind dop active</button>
+    <div class="wrapper">
+      <div class="field">
+        <div class="cube" style="position: absolute; top: 50%; left: 50%"></div>
+      </div>
+      <div class="informationMenu">
+        <p>
+          input-controller:action-activated:
+          <span id="actionActive" class="activeStatus">null</span>
+        </p>
+        <p>
+          input-controller:action-deactivated:
+          <span id="actionDeactive" class="activeStatus">null</span>
+        </p>
 
-		<script type="module" src="input-controller.js"></script>
-		<script type="module" src="input-controller-test.js"></script>
-	</body>
+        <p>
+          focused:
+          <span id="focused" class="activeStatus">true</span>
+        </p>
+      </div>
+    </div>
+
+    <script type="module" src="input-controller.js"></script>
+    <script type="module" src="input-controller-test.js"></script>
+  </body>
 </html>
