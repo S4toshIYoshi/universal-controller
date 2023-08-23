@@ -149,7 +149,7 @@ export class KeyBoard {
   upKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    this.activity.clear
+    this.activity.clear()
 
     delete this.pressButton[e.keyCode]
     if (this.succsesKey && !this.deactivity.has(action)) {
@@ -161,12 +161,13 @@ export class KeyBoard {
 
   downKey(e) {
     let action = this.allBindKey.get(e.keyCode)
+    console.log(action, e.keyCode)
 
     if (!this.buttonsActive(e.keyCode)) {
       this.pressButton[e.keyCode] = e.keyCode
     }
     this.searchKey(e.keyCode)
-    if (this.succsesKey && !this.activity.has(action)) {
+    if (this.succsesKey && !this.activity.has(action) && action) {
       this.deactivity.delete(action)
       this.activity.add(action)
       document.dispatchEvent(this.actionActivated)
@@ -220,10 +221,12 @@ export class InputController {
 
     this.handlerActivity = () => {
       this.activity
+      console.log(this.activity)
     }
 
     this.handlerDeactivity = () => {
       this.deactivity
+      console.log(this.deactivity)
     }
   }
 
@@ -261,6 +264,7 @@ export class InputController {
     this.target = null
     this.enabled = false
     this.activity = null
+    this.deactivity = null
 
     this.plugins.forEach(el => {
       el.listener(false)
@@ -291,10 +295,6 @@ export class InputController {
     return this.plugins.some(el => {
       return el.buttonsActive(keyCode)
     })
-
-    // return (
-    //   this.pressButton.hasOwnProperty(keyCode) && this.allBindKey.get(keyCode)
-    // )
   }
 
   isFocus() {
@@ -318,7 +318,7 @@ export class InputController {
     this.deactivity.clear()
     this.plugins.forEach(el => {
       this.activity.add(...el.activity)
-      this.deactivity.add(...el.activity)
+      this.deactivity.add(...el.deactivity)
     })
   }
 }
