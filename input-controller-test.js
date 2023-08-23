@@ -37,6 +37,7 @@ const inputController = new InputController(ButtonKey)
 const pluginKeyBoard = new KeyBoard(ButtonKey)
 const pluginMouse = new Mouse(ButtonKey)
 inputController.registerPlugin(pluginKeyBoard, pluginMouse)
+inputController.registerPlugin(pluginKeyBoard, pluginMouse)
 
 const setting = {
   x: 50,
