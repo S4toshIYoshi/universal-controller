@@ -27,30 +27,28 @@ export class Mouse extends BasePlugin {
   upKey(e) {
     let action = this.allBindKey.get(e.which)
 
-    this.activity.clear()
-
-    delete this.pressButton[e.which]
-    if (this.succsesKey && !this.deactivity.has(action)) {
+    if (!this.deactivity.has(action) && this.pressButton[e.which]) {
       this.activity.delete(action)
       this.deactivity.add(action)
 
-      super.generationDispath('click', false)
+      this.generationDispath('click', false)
     }
+
+    delete this.pressButton[e.which]
   }
 
   downKey(e) {
     let action = this.allBindKey.get(e.which)
 
-    if (!this.isButtonsActive(e.which)) {
+    if (!this.isButtonsActive(e.which) && !this.activity.has(action)) {
       this.pressButton[e.which] = e.which
     }
     this.searchKey(e.which)
     if (this.succsesKey && !this.activity.has(action)) {
       this.deactivity.delete(action)
       this.activity.add(action)
-      console.log('renderMouse')
 
-      super.generationDispath('click', true)
+      this.generationDispath('click', true)
     }
   }
 
@@ -63,10 +61,10 @@ export class Mouse extends BasePlugin {
     )
 
     if (listenerClickActive) {
-      super.generationListener('mousedown', this.handlerDownKey, show)
+      this.generationListener('mousedown', this.handlerDownKey, show)
     }
     if (listenerClickDeactive) {
-      super.generationListener('mouseup', this.handlerUpKey, show)
+      this.generationListener('mouseup', this.handlerUpKey, show)
     }
   }
 }
@@ -94,30 +92,28 @@ export class KeyBoard extends BasePlugin {
   upKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    this.activity.clear()
-
-    delete this.pressButton[e.keyCode]
-    if (this.succsesKey && !this.deactivity.has(action)) {
+    if (!this.deactivity.has(action) && this.pressButton[e.keyCode]) {
       this.activity.delete(action)
       this.deactivity.add(action)
 
-      super.generationDispath('click', false)
+      this.generationDispath('click', false)
     }
+
+    delete this.pressButton[e.keyCode]
   }
 
   downKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    if (!this.isButtonsActive(e.keyCode)) {
+    if (!this.isButtonsActive(e.keyCode) && !this.activity.has(action)) {
       this.pressButton[e.keyCode] = e.keyCode
     }
     this.searchKey(e.keyCode)
     if (this.succsesKey && !this.activity.has(action)) {
       this.deactivity.delete(action)
       this.activity.add(action)
-      console.log('renderKey')
 
-      super.generationDispath('click', true)
+      this.generationDispath('click', true)
     }
   }
 
@@ -130,10 +126,10 @@ export class KeyBoard extends BasePlugin {
     )
 
     if (listenerClickActive) {
-      super.generationListener('keydown', this.handlerDownKey, show)
+      this.generationListener('keydown', this.handlerDownKey, show)
     }
     if (listenerClickDeactive) {
-      super.generationListener('keyup', this.handlerUpKey, show)
+      this.generationListener('keyup', this.handlerUpKey, show)
     }
   }
 }

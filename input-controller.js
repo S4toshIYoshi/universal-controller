@@ -84,14 +84,14 @@ export class BasePlugin {
       if (activated) {
         this.actionActivated.forEach(el => {
           if (el.detail.type === type) {
-            console.log(el)
+            console.log('active')
             document.dispatchEvent(el)
           }
         })
       } else {
         this.actionDeactivated.forEach(el => {
           if (el.detail.type === type) {
-            console.log(el)
+            console.log('deactive')
             document.dispatchEvent(el)
           }
         })
@@ -113,6 +113,21 @@ export class BasePlugin {
     } else {
       document.removeEventListener(eventType, handler)
     }
+  }
+
+  getSmililarBindAction() {
+    const similarValue = []
+    for (let action in this.actionsToBind) {
+      for (let key in this.actionsToBind[action]) {
+        if (typeof this.actionsToBind[action][key] === 'object') {
+          const similar = []
+          this.actionsToBind[action][key].forEach(el => similar.push(el))
+          similarValue.push(similar)
+        }
+      }
+    }
+
+    return similarValue
   }
 }
 
@@ -142,15 +157,18 @@ export class InputController {
     this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
       detail: {
         type: 'click',
-        active: 'active',
+        key: null,
+        active: false,
         action: new Set(),
       },
     })
     this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
       detail: {
         type: 'click',
-        active: 'deactive',
+        key: null,
+        active: false,
         action: new Set(),
+       
       },
     })
 
@@ -159,7 +177,8 @@ export class InputController {
       {
         detail: {
           type: 'click',
-          active: 'deactive',
+          key: null,
+          active: false,
           action: new Set(),
         },
       }
@@ -178,10 +197,7 @@ export class InputController {
       e.detail.action.clear()
 
       this.updateSet()
-
       e.detail.action.add(...this.activity)
-
-      console.log('action Active')
     }
     /**
      *
@@ -193,9 +209,7 @@ export class InputController {
       e.detail.action.clear()
 
       this.updateSet()
-
       e.detail.action.add(...this.deactivity)
-      console.log('action deactive')
     }
   }
 
