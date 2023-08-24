@@ -81,9 +81,11 @@ export class KeyBoard extends BasePlugin {
   }
 
   actionActive(action) {
-    return this.actionsToBind[action].allkeys.some(el =>
-      this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
-    )
+    if (this.actionsToBind[action]) {
+      return this.actionsToBind[action].allkeys.some(el =>
+        this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
+      )
+    }
   }
 
   upKey(e) {
