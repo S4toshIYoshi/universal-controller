@@ -66,7 +66,8 @@ export class BasePlugin {
    */
   isButtonsActive(keyCode) {
     return (
-      this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
+      this.actionActivated[0].detail.pressButton.hasOwnProperty(keyCode) &&
+      !!this.allBindKey.get(keyCode)
     )
   }
 
@@ -129,6 +130,10 @@ export class BasePlugin {
 
     return similarValue
   }
+
+  synchronizationPressAction(actionName) {
+    return this.plugins.some(plugin => plugin.actionActive(actionName))
+  }
 }
 
 export class InputController {
@@ -160,6 +165,7 @@ export class InputController {
         key: null,
         active: false,
         action: new Set(),
+        pressButton: {},
       },
     })
     this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
@@ -168,7 +174,6 @@ export class InputController {
         key: null,
         active: false,
         action: new Set(),
-       
       },
     })
 
@@ -194,10 +199,7 @@ export class InputController {
      */
     this.handlerActivity = e => {
       this.deactivity.clear()
-      e.detail.action.clear()
-
       this.updateSet()
-      e.detail.action.add(...this.activity)
     }
     /**
      *
@@ -206,10 +208,8 @@ export class InputController {
      */
     this.handlerDeactivity = e => {
       this.activity.clear()
-      e.detail.action.clear()
 
       this.updateSet()
-      e.detail.action.add(...this.deactivity)
     }
   }
 

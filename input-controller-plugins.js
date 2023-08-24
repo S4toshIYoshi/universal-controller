@@ -24,25 +24,31 @@ export class Mouse extends BasePlugin {
     }
   }
 
+  actionActive(action) {
+    return this.actionsToBind[action].keys.some(el =>
+      this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
+    )
+  }
+
   upKey(e) {
     let action = this.allBindKey.get(e.which)
+    delete this.actionActivated[0].detail.pressButton[e.which]
 
-    if (!this.deactivity.has(action) && this.pressButton[e.which]) {
+    if (!this.deactivity.has(action) && !this.actionActive(action)) {
       this.activity.delete(action)
       this.deactivity.add(action)
 
       this.generationDispath('click', false)
     }
-
-    delete this.pressButton[e.which]
   }
 
   downKey(e) {
     let action = this.allBindKey.get(e.which)
 
-    if (!this.isButtonsActive(e.which) && !this.activity.has(action)) {
-      this.pressButton[e.which] = e.which
+    if (!this.isButtonsActive(e.which)) {
+      this.actionActivated[0].detail.pressButton[e.which] = e.which
     }
+
     this.searchKey(e.which)
     if (this.succsesKey && !this.activity.has(action)) {
       this.deactivity.delete(action)
@@ -89,25 +95,34 @@ export class KeyBoard extends BasePlugin {
     }
   }
 
+  actionActive(action) {
+    return this.actionsToBind[action].keys.some(el =>
+      this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
+    )
+
+    //this.pressButton.hasOwnProperty(el)
+  }
+
   upKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    if (!this.deactivity.has(action) && this.pressButton[e.keyCode]) {
+    delete this.actionActivated[0].detail.pressButton[e.keyCode]
+
+    if (!this.deactivity.has(action) && !this.actionActive(action)) {
       this.activity.delete(action)
       this.deactivity.add(action)
 
       this.generationDispath('click', false)
     }
-
-    delete this.pressButton[e.keyCode]
   }
 
   downKey(e) {
     let action = this.allBindKey.get(e.keyCode)
 
-    if (!this.isButtonsActive(e.keyCode) && !this.activity.has(action)) {
-      this.pressButton[e.keyCode] = e.keyCode
+    if (!this.isButtonsActive(e.keyCode)) {
+      this.actionActivated[0].detail.pressButton[e.keyCode] = e.keyCode
     }
+
     this.searchKey(e.keyCode)
     if (this.succsesKey && !this.activity.has(action)) {
       this.deactivity.delete(action)
