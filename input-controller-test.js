@@ -84,6 +84,7 @@ const popupKey = {
   popup: {
     keys: [81],
     enabled: true,
+    allkeys: [81],
   },
 }
 const popup = document.querySelector('.popup')

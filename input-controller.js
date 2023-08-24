@@ -190,7 +190,7 @@ export class InputController {
     this.deactivity = new Set()
 
     this.allBindKey = new Map()
-    this.filingMap(this.actionsToBind, ['keys', 'mouse'])
+    this.filingMap(this.actionsToBind)
 
     /**
      *
@@ -220,7 +220,10 @@ export class InputController {
   bindActions(actionsToBind) {
     this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind)
     this.allBindKey.clear()
-    this.filingMap(this.actionsToBind, ['keys', 'mouse'])
+    this.filingMap(this.actionsToBind)
+    this.plugins.forEach(el => {
+      el.updateMap(this.allBindKey)
+    })
   }
 
   filingMap(bind) {
