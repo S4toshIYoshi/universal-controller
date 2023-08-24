@@ -84,12 +84,14 @@ export class BasePlugin {
       if (activated) {
         this.actionActivated.forEach(el => {
           if (el.detail.type === type) {
+            console.log(el)
             document.dispatchEvent(el)
           }
         })
       } else {
         this.actionDeactivated.forEach(el => {
           if (el.detail.type === type) {
+            console.log(el)
             document.dispatchEvent(el)
           }
         })
