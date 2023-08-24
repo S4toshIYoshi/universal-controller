@@ -6,8 +6,6 @@ export class BasePlugin {
 
     this.actionActivated = [] // кеолекция активных экшенов
     this.actionDeactivated = [] // колекция деактивных экшенов
-
-    this.allBindKey = new Map()
   }
 
   /**
@@ -27,6 +25,19 @@ export class BasePlugin {
   }
 
   /**
+   * @description проверяет есть ли в нажатых кнопках похожие
+   * @param {string} action
+   * @returns {bool}
+   */
+  actionActive(action) {
+    if (this.actionsToBind[action]) {
+      return this.actionsToBind[action].allkeys.some(el =>
+        this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
+      )
+    }
+  }
+
+  /**
    * @description обновляет set экшенов
    * @param  {object} activity
    * @param  {object} deactivity
@@ -35,7 +46,10 @@ export class BasePlugin {
     this.activity = activity
     this.deactivity = deactivity
   }
-
+  /**
+   * @description обновляет список всех биндов
+   * @param {object} newBind
+   */
   updateMap(newBind) {
     this.allBindKey = new Map([...newBind])
   }
@@ -111,25 +125,6 @@ export class BasePlugin {
     } else {
       document.removeEventListener(eventType, handler)
     }
-  }
-
-  getSmililarBindAction() {
-    const similarValue = []
-    for (let action in this.actionsToBind) {
-      for (let key in this.actionsToBind[action]) {
-        if (typeof this.actionsToBind[action][key] === 'object') {
-          const similar = []
-          this.actionsToBind[action][key].forEach(el => similar.push(el))
-          similarValue.push(similar)
-        }
-      }
-    }
-
-    return similarValue
-  }
-
-  synchronizationPressAction(actionName) {
-    return this.plugins.some(plugin => plugin.actionActive(actionName))
   }
 }
 
@@ -226,6 +221,10 @@ export class InputController {
     })
   }
 
+  /**
+   * @description заполняет Map со всеми биндами key => name
+   * @param {object} bind
+   */
   filingMap(bind) {
     if (bind) {
       for (let key in bind) {
@@ -234,10 +233,6 @@ export class InputController {
     }
   }
 
-  /**
-   *
-   * @description сеттер
-   */
   enableAction(actionName) {
     if (this.enabled && this.target) {
       this.actionsToBind[actionName].enabled = true
@@ -304,6 +299,10 @@ export class InputController {
     })
   }
 
+  /**
+   *
+   * @description сеттер для проверки фокуса
+   */
   isFocus() {
     this.focused = document.hasFocus()
 
@@ -316,11 +315,19 @@ export class InputController {
     return this.focused
   }
 
+  /**
+   *
+   * @description инициирует переданные плагины
+   */
   registerPlugin(...arg) {
     this.plugins.push(...arg)
     console.log(this.plugins)
   }
 
+  /**
+   *
+   * @description обновляет списки активности и деактивности, затем отправляет их в плагины
+   */
   updateSet() {
     this.plugins.reduce((acc, el) => {
       if (el.activity && el.deactivity) {
@@ -342,10 +349,18 @@ export class InputController {
     )
   }
 
+  /**
+   *
+   * @description проверят есть ли в объектк личный ключ
+   */
   isKey(obj, key) {
     return typeof obj[key] === 'object'
   }
 
+  /**
+   *
+   * @description проверяет присутсвует ли действия в в нажатых клавишах
+   */
   isPresent(obj, key = []) {
     const result = key.map(key => {
       if (this.isKey(obj, key)) {

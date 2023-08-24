@@ -17,12 +17,6 @@ export class Mouse extends BasePlugin {
     this.allBindKey = new Map([...newBind])
   }
 
-  actionActive(action) {
-    return this.actionsToBind[action].allkeys.some(el =>
-      this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
-    )
-  }
-
   upKey(e) {
     let action = this.allBindKey.get(e.which)
     delete this.actionActivated[0].detail.pressButton[e.which]
@@ -78,14 +72,6 @@ export class KeyBoard extends BasePlugin {
     this.deactivity = new Set()
     this.handlerUpKey = this.upKey.bind(this)
     this.handlerDownKey = this.downKey.bind(this)
-  }
-
-  actionActive(action) {
-    if (this.actionsToBind[action]) {
-      return this.actionsToBind[action].allkeys.some(el =>
-        this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
-      )
-    }
   }
 
   upKey(e) {
