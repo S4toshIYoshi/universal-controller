@@ -197,11 +197,19 @@ export class InputController {
     }
   }
 
+  /**
+   *
+   * @description добовляет новые бинды и раскидывает их по плагинам
+   */
   bindActions(actionsToBind) {
     this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind)
     this.plugins.forEach(el => el.updateMap(this.actionsToBind))
   }
 
+  /**
+   *
+   * @description сеттер
+   */
   enableAction(actionName) {
     if (this.enabled && this.target) {
       this.actionsToBind[actionName].enabled = true
