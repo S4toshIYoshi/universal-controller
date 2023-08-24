@@ -6,15 +6,10 @@ export class Mouse extends BasePlugin {
 
   constructor(actionsToBind) {
     super(actionsToBind)
-    this.allBindKey = new Map()
     this.activity = new Set()
     this.deactivity = new Set()
     this.handlerUpKey = this.upKey.bind(this)
     this.handlerDownKey = this.downKey.bind(this)
-  }
-
-  updateMap(newBind) {
-    this.allBindKey = new Map([...newBind])
   }
 
   upKey(e) {
