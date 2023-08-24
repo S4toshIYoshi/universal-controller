@@ -3,30 +3,35 @@ import {KeyBoard, Mouse} from './input-controller-plugins.js'
 
 const ButtonKey = {
   left: {
-    keys: [65, 37, 1],
+    keys: [65, 37],
     enabled: true,
     mouse: [1],
+    allkeys: [65, 37, 1],
   },
   right: {
-    keys: [68, 39, 3],
+    keys: [68, 39],
     enabled: true,
     mouse: [3],
+    allkeys: [68, 39, 3],
   },
   top: {
     keys: [87, 38],
     enabled: true,
+    allkeys: [87, 38],
   },
   bottom: {
     keys: [83, 40],
     enabled: true,
+    allkeys: [83, 40],
   },
 }
 
 const jumpKey = {
   jump: {
-    keys: [32, 2],
+    keys: [32],
     enabled: true,
     mouse: [2],
+    allkeys: [32, 2],
   },
 }
 

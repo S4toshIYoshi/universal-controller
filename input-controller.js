@@ -2,15 +2,12 @@ export class BasePlugin {
   constructor(actionsToBind) {
     this.actionsToBind = actionsToBind // бинды
 
-    this.pressButton = {} // нажатые кнопки
-
-    this.allBindKey = new Map() // коллекция всех кодов действий
-    this.filingMap(this.actionsToBind)
-
     this.succsesKey = false
 
     this.actionActivated = [] // кеолекция активных экшенов
     this.actionDeactivated = [] // колекция деактивных экшенов
+
+    this.allBindKey = new Map()
   }
 
   /**
@@ -39,14 +36,14 @@ export class BasePlugin {
     this.deactivity = deactivity
   }
 
+  updateMap(newBind) {
+    this.allBindKey = new Map([...newBind])
+  }
+
   /**
    * @description обновляет Map всех нажатых кнопок
    * @param  {object} newBind
    */
-  updateMap(newBind) {
-    this.allBindKey.clear()
-    this.filingMap(newBind)
-  }
 
   /**
    * @description првоверят есть ли переданное значение во всех биндах
@@ -192,6 +189,9 @@ export class InputController {
     this.activity = new Set()
     this.deactivity = new Set()
 
+    this.allBindKey = new Map()
+    this.filingMap(this.actionsToBind, ['keys', 'mouse'])
+
     /**
      *
      * @description срабатывает когда экшен активен
@@ -219,7 +219,16 @@ export class InputController {
    */
   bindActions(actionsToBind) {
     this.actionsToBind = Object.assign(this.actionsToBind, actionsToBind)
-    this.plugins.forEach(el => el.updateMap(this.actionsToBind))
+    this.allBindKey.clear()
+    this.filingMap(this.actionsToBind, ['keys', 'mouse'])
+  }
+
+  filingMap(bind) {
+    if (bind) {
+      for (let key in bind) {
+        bind[key].allkeys.forEach(el => this.allBindKey.set(el, key))
+      }
+    }
   }
 
   /**
@@ -246,6 +255,7 @@ export class InputController {
       el.initEventsActive(this.actionActivated)
       el.initEventsDeactive(this.actionDeactivated, this.actionAdvertising)
       el.listener(true)
+      el.updateMap(this.allBindKey)
     })
 
     document.addEventListener(this.ACTION_ACTIVATED, this.handlerActivity)

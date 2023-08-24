@@ -6,26 +6,19 @@ export class Mouse extends BasePlugin {
 
   constructor(actionsToBind) {
     super(actionsToBind)
+    this.allBindKey = new Map()
     this.activity = new Set()
     this.deactivity = new Set()
     this.handlerUpKey = this.upKey.bind(this)
     this.handlerDownKey = this.downKey.bind(this)
   }
 
-  filingMap(bind) {
-    if (bind) {
-      for (let key in bind) {
-        if (this.actionsToBind[key].mouse) {
-          this.actionsToBind[key].mouse.forEach(el =>
-            this.allBindKey.set(el, key)
-          )
-        }
-      }
-    }
+  updateMap(newBind) {
+    this.allBindKey = new Map([...newBind])
   }
 
   actionActive(action) {
-    return this.actionsToBind[action].keys.some(el =>
+    return this.actionsToBind[action].allkeys.some(el =>
       this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
     )
   }
@@ -87,20 +80,10 @@ export class KeyBoard extends BasePlugin {
     this.handlerDownKey = this.downKey.bind(this)
   }
 
-  filingMap(bind) {
-    if (bind) {
-      for (let key in bind) {
-        this.actionsToBind[key].keys.forEach(el => this.allBindKey.set(el, key))
-      }
-    }
-  }
-
   actionActive(action) {
-    return this.actionsToBind[action].keys.some(el =>
+    return this.actionsToBind[action].allkeys.some(el =>
       this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
     )
-
-    //this.pressButton.hasOwnProperty(el)
   }
 
   upKey(e) {
