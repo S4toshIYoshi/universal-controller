@@ -1,36 +1,57 @@
 export class BasePlugin {
   constructor(actionsToBind) {
-    this.actionsToBind = actionsToBind
+    this.actionsToBind = actionsToBind // бинды
 
-    this.pressButton = {}
+    this.pressButton = {} // нажатые кнопки
 
-    this.allBindKey = new Map()
+    this.allBindKey = new Map() // коллекция всех кодов действий
     this.filingMap(this.actionsToBind)
 
     this.succsesKey = false
 
-    this.actionActivated = []
-    this.actionDeactivated = []
+    this.actionActivated = [] // кеолекция активных экшенов
+    this.actionDeactivated = [] // колекция деактивных экшенов
   }
 
+  /**
+   * @description инициализирует активные экшены
+   * @param  {object} events
+   */
   initEventsActive(...events) {
     this.actionActivated.push(...events)
   }
 
+  /**
+   * @description инициализирует не активные экшены
+   * @param  {object} events
+   */
   initEventsDeactive(...events) {
     this.actionDeactivated.push(...events)
   }
 
+  /**
+   * @description обновляет set экшенов
+   * @param  {object} activity
+   * @param  {object} deactivity
+   */
   updateActivity(activity, deactivity) {
     this.activity = activity
     this.deactivity = deactivity
   }
 
+  /**
+   * @description обновляет Map всех нажатых кнопок
+   * @param  {object} newBind
+   */
   updateMap(newBind) {
     this.allBindKey.clear()
     this.filingMap(newBind)
   }
 
+  /**
+   * @description првоверят есть ли переданное значение во всех биндах
+   * @param  {number} keyCode
+   */
   searchKey(keyCode) {
     if (this.allBindKey.has(keyCode)) {
       this.succsesKey = true
@@ -39,7 +60,11 @@ export class BasePlugin {
     }
   }
 
-  buttonsActive(keyCode) {
+  /**
+   * @description проверяет нажата ли кнопка по переданомму коду
+   * @param  {number} keyCode
+   */
+  isButtonsActive(keyCode) {
     return (
       this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
     )
@@ -72,6 +97,14 @@ export class BasePlugin {
     }
   }
 
+  /**
+   * @description цепляет к document слушатель на переданное событие
+   * @param {string} eventType
+   * @param {Function} handler
+   * @param {bool} show
+   *
+   */
+
   generationListener(eventType, handler, show) {
     if (show) {
       document.addEventListener(eventType, handler)
@@ -82,19 +115,19 @@ export class BasePlugin {
 }
 
 export class InputController {
-  enabled
-  focused
+  enabled // доступность контроллера
+  focused // фокус пользователя на экран
+
+  // Экшены
   ACTION_ACTIVATED = 'input-controller:action-activated'
   ACTION_DEACTIVATED = 'input-controller:action-deactivated'
-
   ACTION_ADVERTISING_DEACTIVATED = 'input-controller:advertising-deactevated'
 
-  plugins
+  plugins // все подключенные плагины
 
-  target
-  activity
-  deactivity
-  newAction
+  target // объект к которму цепляемся
+  activity // Set колекция с активными экшенами
+  deactivity // Set колекция с не активными экшенами
 
   constructor(actionsToBind, target = null) {
     this.actionsToBind = actionsToBind
@@ -132,8 +165,12 @@ export class InputController {
 
     this.activity = new Set()
     this.deactivity = new Set()
-    this.newAction = null
 
+    /**
+     *
+     * @description срабатывает когда экшен активен
+     * @description обновляет колекцию deactivity и detail.action
+     */
     this.handlerActivity = e => {
       this.deactivity.clear()
       e.detail.action.clear()
@@ -141,8 +178,14 @@ export class InputController {
       this.updateSet()
 
       e.detail.action.add(...this.activity)
-    }
 
+      console.log('action Active')
+    }
+    /**
+     *
+     * @description срабатывает когда экшен активен
+     * @description обновляет колекцию activity и detail.action
+     */
     this.handlerDeactivity = e => {
       this.activity.clear()
       e.detail.action.clear()
@@ -150,6 +193,7 @@ export class InputController {
       this.updateSet()
 
       e.detail.action.add(...this.deactivity)
+      console.log('action deactive')
     }
   }
 
@@ -219,7 +263,7 @@ export class InputController {
 
   isKeyPressed(keyCode) {
     return this.plugins.some(el => {
-      return el.buttonsActive(keyCode)
+      return el.isButtonsActive(keyCode)
     })
   }
 
