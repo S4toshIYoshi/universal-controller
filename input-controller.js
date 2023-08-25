@@ -8,10 +8,6 @@ export class BasePlugin {
 		this.actionDeactivated = []; // колекция деактивных экшенов
 	}
 
-	setPressButton(obj) {
-		this.pressButton = obj;
-	}
-
 	/**
 	 * @description инициализирует активные экшены
 	 * @param  {object} events
@@ -31,6 +27,10 @@ export class BasePlugin {
 	setDetachAction() {
 		this.actionActivated = [];
 		this.actionDeactivated = [];
+	}
+
+	setPressButton(obj) {
+		this.pressButton = obj;
 	}
 
 	/**
@@ -199,6 +199,8 @@ export class InputController {
 		};
 	}
 
+	//inits ------------------------------------------------------------------------------------
+
 	/**
 	 *
 	 * @description добовляет новые бинды и раскидывает их по плагинам
@@ -221,18 +223,6 @@ export class InputController {
 			for (let key in bind) {
 				bind[key].allkeys.forEach(el => this.allBindKey.set(el, key));
 			}
-		}
-	}
-
-	enableAction(actionName) {
-		if (this.enabled && this.target) {
-			this.actionsToBind[actionName].enabled = true;
-		}
-	}
-
-	disableAction(actionName) {
-		if (this.enabled && this.target) {
-			this.actionsToBind[actionName].enabled = false;
 		}
 	}
 
@@ -265,6 +255,17 @@ export class InputController {
 			this.handlerDeactivity
 		);
 	}
+
+	/**
+	 *
+	 * @description инициирует переданные плагины
+	 */
+	registerPlugin(...arg) {
+		this.plugins.push(...arg);
+		console.log(this.plugins);
+	}
+
+	//checks ---------------------------------------------------------------------------------------------------
 
 	isActionActive(actionName) {
 		this.updatePressButton();
@@ -302,11 +303,38 @@ export class InputController {
 
 	/**
 	 *
-	 * @description инициирует переданные плагины
+	 * @description проверят есть ли в объекте ключ
 	 */
-	registerPlugin(...arg) {
-		this.plugins.push(...arg);
-		console.log(this.plugins);
+	isKey(obj, key) {
+		return typeof obj[key] === 'object';
+	}
+
+	/**
+	 *
+	 * @description проверяет присутсвует ли действия в нажатых клавишах
+	 */
+	isPresent(obj, key = []) {
+		const result = key.map(key => {
+			if (this.isKey(obj, key)) {
+				return obj[key].some(el => this.isKeyPressed(el));
+			}
+		});
+
+		return result.some(el => el);
+	}
+
+	//updates data ---------------------------------------------------------------------------------------
+
+	enableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = true;
+		}
+	}
+
+	disableAction(actionName) {
+		if (this.enabled && this.target) {
+			this.actionsToBind[actionName].enabled = false;
+		}
 	}
 
 	/**
@@ -334,6 +362,10 @@ export class InputController {
 		);
 	}
 
+	/**
+	 *
+	 * @description обновляет списки нажатых кнопок, затем отправляет их в плагины
+	 */
 	updatePressButton() {
 		this.plugins.forEach(el => {
 			if (el.pressButton) {
@@ -343,27 +375,5 @@ export class InputController {
 		this.plugins.forEach(el => {
 			el.setPressButton(this.pressButton);
 		});
-	}
-
-	/**
-	 *
-	 * @description проверят есть ли в объектк личный ключ
-	 */
-	isKey(obj, key) {
-		return typeof obj[key] === 'object';
-	}
-
-	/**
-	 *
-	 * @description проверяет присутсвует ли действия в в нажатых клавишах
-	 */
-	isPresent(obj, key = []) {
-		const result = key.map(key => {
-			if (this.isKey(obj, key)) {
-				return obj[key].some(el => this.isKeyPressed(el));
-			}
-		});
-
-		return result.some(el => el);
 	}
 }
