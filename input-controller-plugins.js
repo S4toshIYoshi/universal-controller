@@ -1,116 +1,121 @@
-import {BasePlugin} from './input-controller.js'
+import { BasePlugin } from './input-controller.js';
 
 export class Mouse extends BasePlugin {
-  activity
-  deactivity
+	activity;
+	deactivity;
+	pressButton;
 
-  constructor(actionsToBind) {
-    super(actionsToBind)
-    this.activity = new Set()
-    this.deactivity = new Set()
-    this.handlerUpKey = this.upKey.bind(this)
-    this.handlerDownKey = this.downKey.bind(this)
-  }
+	constructor(actionsToBind) {
+		super(actionsToBind);
+		this.activity = new Set();
+		this.deactivity = new Set();
+		this.handlerUpKey = this.upKey.bind(this);
+		this.handlerDownKey = this.downKey.bind(this);
 
-  upKey(e) {
-    let action = this.allBindKey.get(e.which)
-    delete this.actionActivated[0].detail.pressButton[e.which]
+		this.pressButton = {};
+	}
 
-    if (!this.deactivity.has(action) && !this.actionActive(action)) {
-      this.activity.delete(action)
-      this.deactivity.add(action)
+	upKey(e) {
+		let action = this.allBindKey.get(e.which);
+		delete this.pressButton[e.which];
 
-      this.generationDispath('click', false)
-    }
-  }
+		if (!this.deactivity.has(action) && !this.actionActive(action)) {
+			this.activity.delete(action);
+			this.deactivity.add(action);
 
-  downKey(e) {
-    let action = this.allBindKey.get(e.which)
+			this.generationDispath('click', false);
+		}
+	}
 
-    if (!this.isButtonsActive(e.which)) {
-      this.actionActivated[0].detail.pressButton[e.which] = e.which
-    }
+	downKey(e) {
+		let action = this.allBindKey.get(e.which);
 
-    this.searchKey(e.which)
-    if (this.succsesKey && !this.activity.has(action)) {
-      this.deactivity.delete(action)
-      this.activity.add(action)
+		if (!this.isButtonsActive(e.which)) {
+			this.pressButton[e.which] = e.which;
+		}
 
-      this.generationDispath('click', true)
-    }
-  }
+		this.searchKey(e.which);
+		if (this.succsesKey && !this.activity.has(action)) {
+			this.deactivity.delete(action);
+			this.activity.add(action);
 
-  listener(show) {
-    const listenerClickActive = this.actionActivated.some(
-      el => el.detail.type === 'click'
-    )
-    const listenerClickDeactive = this.actionDeactivated.some(
-      el => el.detail.type === 'click'
-    )
+			this.generationDispath('click', true);
+		}
+	}
 
-    if (listenerClickActive) {
-      this.generationListener('mousedown', this.handlerDownKey, show)
-    }
-    if (listenerClickDeactive) {
-      this.generationListener('mouseup', this.handlerUpKey, show)
-    }
-  }
+	listener(show) {
+		const listenerClickActive = this.actionActivated.some(
+			el => el.detail.type === 'click'
+		);
+		const listenerClickDeactive = this.actionDeactivated.some(
+			el => el.detail.type === 'click'
+		);
+
+		if (listenerClickActive) {
+			this.generationListener('mousedown', this.handlerDownKey, show);
+		}
+		if (listenerClickDeactive) {
+			this.generationListener('mouseup', this.handlerUpKey, show);
+		}
+	}
 }
 
 export class KeyBoard extends BasePlugin {
-  activity
-  deactivity
+	activity;
+	deactivity;
+	pressButton;
 
-  constructor(actionsToBind) {
-    super(actionsToBind)
-    this.activity = new Set()
-    this.deactivity = new Set()
-    this.handlerUpKey = this.upKey.bind(this)
-    this.handlerDownKey = this.downKey.bind(this)
-  }
+	constructor(actionsToBind) {
+		super(actionsToBind);
+		this.activity = new Set();
+		this.deactivity = new Set();
+		this.handlerUpKey = this.upKey.bind(this);
+		this.handlerDownKey = this.downKey.bind(this);
+		this.pressButton = {};
+	}
 
-  upKey(e) {
-    let action = this.allBindKey.get(e.keyCode)
+	upKey(e) {
+		let action = this.allBindKey.get(e.keyCode);
 
-    delete this.actionActivated[0].detail.pressButton[e.keyCode]
+		delete this.pressButton[e.keyCode];
 
-    if (!this.deactivity.has(action) && !this.actionActive(action)) {
-      this.activity.delete(action)
-      this.deactivity.add(action)
+		if (!this.deactivity.has(action) && !this.actionActive(action)) {
+			this.activity.delete(action);
+			this.deactivity.add(action);
 
-      this.generationDispath('click', false)
-    }
-  }
+			this.generationDispath('click', false);
+		}
+	}
 
-  downKey(e) {
-    let action = this.allBindKey.get(e.keyCode)
+	downKey(e) {
+		let action = this.allBindKey.get(e.keyCode);
 
-    if (!this.isButtonsActive(e.keyCode)) {
-      this.actionActivated[0].detail.pressButton[e.keyCode] = e.keyCode
-    }
+		if (!this.isButtonsActive(e.keyCode)) {
+			this.pressButton[e.keyCode] = e.keyCode;
+		}
 
-    this.searchKey(e.keyCode)
-    if (this.succsesKey && !this.activity.has(action)) {
-      this.deactivity.delete(action)
-      this.activity.add(action)
+		this.searchKey(e.keyCode);
+		if (this.succsesKey && !this.activity.has(action)) {
+			this.deactivity.delete(action);
+			this.activity.add(action);
 
-      this.generationDispath('click', true)
-    }
-  }
+			this.generationDispath('click', true);
+		}
+	}
 
-  listener(show) {
-    const listenerClickActive = this.actionActivated.some(
-      el => el.detail.type === 'click'
-    )
-    const listenerClickDeactive = this.actionDeactivated.some(
-      el => el.detail.type === 'click'
-    )
+	listener(show) {
+		const listenerClickActive = this.actionActivated.some(
+			el => el.detail.type === 'click'
+		);
+		const listenerClickDeactive = this.actionDeactivated.some(
+			el => el.detail.type === 'click'
+		);
 
-    if (listenerClickActive) {
-      this.generationListener('keydown', this.handlerDownKey, show)
-    }
-    if (listenerClickDeactive) {
-      this.generationListener('keyup', this.handlerUpKey, show)
-    }
-  }
+		if (listenerClickActive) {
+			this.generationListener('keydown', this.handlerDownKey, show);
+		}
+		if (listenerClickDeactive) {
+			this.generationListener('keyup', this.handlerUpKey, show);
+		}
+	}
 }

@@ -8,6 +8,10 @@ export class BasePlugin {
 		this.actionDeactivated = []; // колекция деактивных экшенов
 	}
 
+	setPressButton(obj) {
+		this.pressButton = obj;
+	}
+
 	/**
 	 * @description инициализирует активные экшены
 	 * @param  {object} events
@@ -37,7 +41,7 @@ export class BasePlugin {
 	actionActive(action) {
 		if (this.actionsToBind[action]) {
 			return this.actionsToBind[action].allkeys.some(el =>
-				this.actionActivated[0].detail.pressButton.hasOwnProperty(el)
+				this.pressButton.hasOwnProperty(el)
 			);
 		}
 	}
@@ -82,8 +86,7 @@ export class BasePlugin {
 	 */
 	isButtonsActive(keyCode) {
 		return (
-			this.actionActivated[0].detail.pressButton.hasOwnProperty(keyCode) &&
-			!!this.allBindKey.get(keyCode)
+			this.pressButton.hasOwnProperty(keyCode) && !!this.allBindKey.get(keyCode)
 		);
 	}
 
@@ -155,20 +158,17 @@ export class InputController {
 		this.target = target;
 		this.enabled = false;
 
+		this.pressButton = {};
+
 		this.actionActivated = new CustomEvent(this.ACTION_ACTIVATED, {
 			detail: {
 				type: 'click',
-				key: null,
-				active: false,
 				action: new Set(),
-				pressButton: {},
 			},
 		});
 		this.actionDeactivated = new CustomEvent(this.ACTION_DEACTIVATED, {
 			detail: {
 				type: 'click',
-				key: null,
-				active: false,
 				action: new Set(),
 			},
 		});
@@ -195,7 +195,6 @@ export class InputController {
 		 */
 		this.handlerDeactivity = e => {
 			this.activity.clear();
-
 			this.updateSet();
 		};
 	}
@@ -268,6 +267,7 @@ export class InputController {
 	}
 
 	isActionActive(actionName) {
+		this.updatePressButton();
 		const isBool =
 			this.focused &&
 			this.enabled &&
@@ -332,6 +332,17 @@ export class InputController {
 		this.plugins.forEach(el =>
 			el.updateActivity(this.activity, this.deactivity)
 		);
+	}
+
+	updatePressButton() {
+		this.plugins.reduce((acc, el) => {
+			if (el.pressButton) {
+				this.pressButton = Object.assign(this.pressButton, el.pressButton);
+			}
+		});
+		this.plugins.forEach(el => {
+			el.setPressButton(this.pressButton);
+		});
 	}
 
 	/**
