@@ -335,7 +335,7 @@ export class InputController {
 	}
 
 	updatePressButton() {
-		this.plugins.reduce((acc, el) => {
+		this.plugins.forEach(el => {
 			if (el.pressButton) {
 				this.pressButton = Object.assign(this.pressButton, el.pressButton);
 			}
