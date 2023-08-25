@@ -59,13 +59,13 @@ const setting = {
 const attach = document.querySelector('.actived');
 attach.onclick = () => {
 	inputController.attach(target, false);
-	console.log('active');
+	console.log('attached');
 };
 
 const detach = document.querySelector('.deactived');
 detach.onclick = () => {
 	inputController.detach();
-	console.log('deactive');
+	console.log('detached');
 };
 
 const activeController = document.querySelector('.activeController');
