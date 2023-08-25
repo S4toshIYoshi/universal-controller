@@ -79,7 +79,11 @@ export class KeyBoard extends BasePlugin {
 
 		delete this.pressButton[e.keyCode];
 
-		if (!this.deactivity.has(action) && !this.actionActive(action)) {
+		if (
+			!this.deactivity.has(action) &&
+			!this.actionActive(action) &&
+			this.allBindKey.get(e.keyCode)
+		) {
 			this.activity.delete(action);
 			this.deactivity.add(action);
 
@@ -90,7 +94,7 @@ export class KeyBoard extends BasePlugin {
 	downKey(e) {
 		let action = this.allBindKey.get(e.keyCode);
 
-		if (!this.isButtonsActive(e.keyCode)) {
+		if (!this.isButtonsActive(e.keyCode) && this.allBindKey.get(e.keyCode)) {
 			this.pressButton[e.keyCode] = e.keyCode;
 		}
 
